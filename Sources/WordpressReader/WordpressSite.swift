@@ -55,7 +55,20 @@ public struct WordpressSite {
         }
     }
     
-    public func fetchContent<T: WordpressContent>(_ type: T.Type, postedAfter: Date? = nil, postedBefore: Date? = nil, orderBy: WordpressOrderBy? = nil, order: WordpressOrder? = nil, startPage: Int = 1, perPage: Int? = nil, maxNumPages: Int? = nil, batchCompletion: @escaping (Result<[T], Error>) -> Void, completion: (() -> Void)? = nil) {
+    public func fetchContent<T: WordpressContent>(
+        _ type: T.Type,
+        postedAfter: Date? = nil,
+        postedBefore: Date? = nil,
+        modifiedAfter: Date? = nil,
+        modifiedBefore: Date? = nil,
+        orderBy: WordpressOrderBy? = nil,
+        order: WordpressOrder? = nil,
+        startPage: Int = 1,
+        perPage: Int? = nil,
+        maxNumPages: Int? = nil,
+        batchCompletion: @escaping (Result<[T], Error>) -> Void,
+        completion: (() -> Void)? = nil
+    ) {
         guard startPage > 0 else {
             print("ERROR - start page must be greater than zero")
             return
@@ -72,11 +85,17 @@ public struct WordpressSite {
         if !fields.isEmpty {
             queryItems.append(URLQueryItem(name: "_fields", value: fields.joined(separator: ",")))
         }
-        if let after = postedAfter {
-            queryItems.append(URLQueryItem(name: "after", value: Self.isoDateFormatter.string(from: after)))
+        if let postedAfter = postedAfter {
+            queryItems.append(URLQueryItem(name: "after", value: Self.isoDateFormatter.string(from: postedAfter)))
         }
-        if let before = postedBefore {
-            queryItems.append(URLQueryItem(name: "before", value: Self.isoDateFormatter.string(from: before)))
+        if let postedBefore = postedBefore {
+            queryItems.append(URLQueryItem(name: "before", value: Self.isoDateFormatter.string(from: postedBefore)))
+        }
+        if let modifiedAfter = modifiedAfter {
+            queryItems.append(URLQueryItem(name: "modified_after", value: Self.isoDateFormatter.string(from: modifiedAfter)))
+        }
+        if let modifiedBefore = modifiedBefore {
+            queryItems.append(URLQueryItem(name: "modified_before", value: Self.isoDateFormatter.string(from: modifiedBefore)))
         }
         if let orderBy = orderBy {
             queryItems.append(URLQueryItem(name: "orderBy", value: orderBy.rawValue))
