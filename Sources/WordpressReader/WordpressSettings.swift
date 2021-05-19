@@ -8,15 +8,15 @@
 import Foundation
 
 @available (iOS 13, *)
-struct WordpressSettings: Codable, Identifiable, ParameterLabels {
-    static var labelMaker: WordpressSettings = WordpressSettings(ID: 0, name: "", description: "", URL: "", icon: .labelMaker, logo: .labelMaker)
+public struct WordpressSettings: Codable, Identifiable, ParameterLabels {
+    public static var labelMaker: WordpressSettings = WordpressSettings(ID: 0, name: "", description: "", URL: "", icon: .labelMaker, logo: .labelMaker)
     
-    var ID: Int
-    var name: String
-    var description: String
-    var URL: String
-    var icon: WordpressIcon
-    var logo: WordpressLogo
+    public var ID: Int
+    public var name: String
+    public var description: String
+    public var URL: String
+    public var icon: WordpressIcon
+    public var logo: WordpressLogo
     
-    var id: Int { self.ID }
+    public var id: Int { self.ID }
 }

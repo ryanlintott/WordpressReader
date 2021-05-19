@@ -8,19 +8,19 @@
 import Foundation
 
 @available (iOS 13, macOS 10.15, *)
-struct WordpressCategory: WordpressItem {
-    static var labelMaker: WordpressCategory = WordpressCategory(id: 0, count: 0, description: "", link: "", name: "", slug: "")
+public struct WordpressCategory: WordpressItem {
+    public static var labelMaker: WordpressCategory = WordpressCategory(id: 0, count: 0, description: "", link: "", name: "", slug: "")
     
-    var id: Int
-    var count: Int
-    var description: String
-    var link: String
-    var name: String
-    var slug: String
+    public var id: Int
+    public var count: Int
+    public var description: String
+    public var link: String
+    public var name: String
+    public var slug: String
     
-    static func < (lhs: WordpressCategory, rhs: WordpressCategory) -> Bool {
+    public static func < (lhs: WordpressCategory, rhs: WordpressCategory) -> Bool {
         lhs.name < rhs.name
     }
     
-    static let urlComponent = "categories"
+    public static let urlComponent = "categories"
 }

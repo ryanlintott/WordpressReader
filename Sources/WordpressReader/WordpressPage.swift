@@ -8,33 +8,19 @@
 import Foundation
 
 @available (iOS 13, macOS 10.15, *)
-struct WordpressPage: WordpressContent {
-    static var labelMaker: WordpressPage = WordpressPage(id: 0, date_gmt: Date(), modified_gmt: Date(), slug: "", link: "", title: .labelMaker, content: .labelMaker, excerpt: .labelMaker)
+public struct WordpressPage: WordpressContent {
+    public static var labelMaker: WordpressPage = WordpressPage(id: 0, date_gmt: Date(), modified_gmt: Date(), slug: "", link: "", title: .labelMaker, content: .labelMaker, excerpt: .labelMaker)
     
-    var id: Int
+    public var id: Int
 //    var date: Date
-    var date_gmt: Date
+    public var date_gmt: Date
 //    var modified: Date
-    var modified_gmt: Date
-    var slug: String
-    var link: String
-    var title: RenderedContent
-    var content: RenderedContent
-    var excerpt: RenderedContent
+    public var modified_gmt: Date
+    public var slug: String
+    public var link: String
+    public var title: RenderedContent
+    public var content: RenderedContent
+    public var excerpt: RenderedContent
     
-    var slugCleaned: String {
-        slug.removingPercentEncoding ?? slug
-    }
-    var titleCleaned: String {
-        title.rendered.removingPercentEncoding ?? title.rendered
-    }
-    var contentHtml: String {
-        content.rendered.removingPercentEncoding ?? content.rendered
-    }
-    
-    static func < (lhs: WordpressPage, rhs: WordpressPage) -> Bool {
-        lhs.titleCleaned < rhs.titleCleaned
-    }
-    
-    static let urlComponent = "pages"
+    public static let urlComponent = "pages"
 }

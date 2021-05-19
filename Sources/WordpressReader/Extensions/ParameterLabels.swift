@@ -7,11 +7,11 @@
 
 import Foundation
 
-internal protocol ParameterLabels {
+public protocol ParameterLabels {
     static var labelMaker: Self { get }
 }
 
-internal extension ParameterLabels {
+public extension ParameterLabels {
     static var parameterLabels: [String] {
         Mirror(reflecting: Self.labelMaker).children.compactMap(\.label)
     }

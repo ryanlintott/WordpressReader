@@ -8,8 +8,8 @@
 import Foundation
 
 @available (iOS 13, *)
-struct RenderedContent: Codable, Hashable, Equatable, ParameterLabels {
-    static var labelMaker: RenderedContent = RenderedContent(rendered: "")
+public struct RenderedContent: Codable, Hashable, Equatable, ParameterLabels {
+    public static var labelMaker: RenderedContent = RenderedContent(rendered: "")
     
-    var rendered: String
+    public var rendered: String
 }

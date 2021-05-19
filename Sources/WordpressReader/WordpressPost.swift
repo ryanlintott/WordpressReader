@@ -8,35 +8,21 @@
 import Foundation
 
 @available (iOS 13, macOS 10.15, *)
-struct WordpressPost: WordpressContent {
-    static var labelMaker: WordpressPost = WordpressPost(id: 0, date_gmt: Date(), modified_gmt: Date(), slug: "", link: "", title: .labelMaker, content: .labelMaker, excerpt: .labelMaker, categories: [], tags: [])
+public struct WordpressPost: WordpressContent {
+    public static var labelMaker: WordpressPost = WordpressPost(id: 0, date_gmt: Date(), modified_gmt: Date(), slug: "", link: "", title: .labelMaker, content: .labelMaker, excerpt: .labelMaker, categories: [], tags: [])
     
-    var id: Int
+    public var id: Int
 //    var date: Date
-    var date_gmt: Date
+    public var date_gmt: Date
 //    var modified: Date
-    var modified_gmt: Date
-    var slug: String
-    var link: String
-    var title: RenderedContent
-    var content: RenderedContent
-    var excerpt: RenderedContent
-    var categories: [Int]
-    var tags: [Int]
+    public var modified_gmt: Date
+    public var slug: String
+    public var link: String
+    public var title: RenderedContent
+    public var content: RenderedContent
+    public var excerpt: RenderedContent
+    public var categories: [Int]
+    public var tags: [Int]
     
-    var slugCleaned: String {
-        slug.removingPercentEncoding ?? slug
-    }
-    var titleCleaned: String {
-        title.rendered.removingPercentEncoding ?? title.rendered
-    }
-    var contentHtml: String {
-        content.rendered.removingPercentEncoding ?? content.rendered
-    }
-    
-    static func < (lhs: WordpressPost, rhs: WordpressPost) -> Bool {
-        lhs.titleCleaned < rhs.titleCleaned
-    }
-    
-    static let urlComponent = "posts"
+    public static let urlComponent = "posts"
 }

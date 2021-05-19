@@ -10,13 +10,14 @@ import Foundation
 import UIKit
 #endif
 
-enum NetworkError: Error {
+public enum NetworkError: Error {
     case badURL, nonHttpUrl, requestFailed, unknown
 }
 
-enum RequestError: Error {
+public enum RequestError: Error {
     case badHeaderName
 }
+
 
 @available (iOS 13, macOS 10.15, *)
 internal extension URLSession {

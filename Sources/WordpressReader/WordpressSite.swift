@@ -1,5 +1,5 @@
 //
-//  WordpressSiteModel.swift
+//  WordpressSite.swift
 //  Wordhord
 //
 //  Created by Ryan Lintott on 2020-09-15.
@@ -7,92 +7,55 @@
 
 import Foundation
 
-enum WordpressError: Error {
-    case APIError, BadArgument, BadURL
-}
-
-enum WordpressOrderBy: String {
+public enum WordpressOrderBy: String {
     case date, modified
 }
 
-enum WordpressOrder: String {
+public enum WordpressOrder: String {
     case asc, desc
 }
 
 @available (iOS 13, macOS 10.15, *)
-class WordpressSite: ObservableObject {
-    let siteUrl: String
-    let name: String
+public struct WordpressSite {
+    public let domain: String
+    public let name: String
+    public let restAPIv1_1Url: URL
+    public let restAPIv2Url: URL
+    public let settingsUrl: URL
     
     // only works for wordpress.com sites for now so always true
     let dotCom: Bool = true
     
-    @Published var currentPost: WordpressPost? = nil
-    @Published var posts = [WordpressPost]()
-    @Published var pages = [WordpressPage]()
-    @Published var categories = [WordpressCategory]()
-    @Published var settings: WordpressSettings? = nil
-    @Published var loading = false
-    
-    init(siteUrl: String, name: String) {
-        self.siteUrl = siteUrl
+    public init(domain: String, name: String) {
+        self.domain = domain
         self.name = name
+        restAPIv1_1Url = Self.wordpressDotComRestAPIv1_1Prefix.appendingPathComponent(domain)
+        restAPIv2Url = Self.wordpressDotComRestAPIv2Prefix.appendingPathComponent(domain)
+        settingsUrl = restAPIv1_1Url
     }
     
     static let wordpressDotComRestAPIv2Prefix = URL(staticString: "https://public-api.wordpress.com/wp/v2/sites")
     static let wordpressDotComRestAPIv1_1Prefix = URL(staticString: "https://public-api.wordpress.com/rest/v1.1/sites")
     static let totalPagesHeader: String = "X-WP-TotalPages"
     
-    var restAPIv1_1Url: URL {
-        Self.wordpressDotComRestAPIv1_1Prefix.appendingPathComponent(siteUrl)
-    }
     
-    var restAPIv2Url: URL {
-        Self.wordpressDotComRestAPIv2Prefix.appendingPathComponent(siteUrl)
-    }
-    
-    var settingsUrl: URL {
-        return restAPIv1_1Url
-    }
-    
-    func loadAll(completion: (() -> Void)? = nil) {
-//        loadSettings {
-//            self.loadPosts {
-//                self.loadPages {
-//                    self.loadCategories {
-//                        completion?()
-//                    }
-//                }
-//            }
-//        }
-    }
-    
-    func loadSettings(completion: (() -> Void)? = nil) {
+    public func fetchSettings(completion: @escaping (Result<WordpressSettings, Error>) -> Void) {
         URLSession.fetchJsonData(WordpressSettings.self, url: settingsUrl, dateDecodingStrategy: .formatted(Self.gmtDateFormatter)) { result in
-            switch result {
-            case .success(let result):
-                DispatchQueue.main.async {
-                    self.settings = result
-                }
-            case .failure(let error):
-                print("Error loadSettings")
-                self.processError(error)
-            }
-            completion?()
+            completion(result)
         }
     }
     
-    func fetchById<T: WordpressItem>(_ type: T.Type, id: Int, completion: @escaping (Result<T, Error>) -> Void) {
+    public func fetchById<T: WordpressItem>(_ type: T.Type, id: Int, completion: @escaping (Result<T, Error>) -> Void) {
         let url = restAPIv2Url
             .appendingPathComponent(type.urlComponent)
             .appendingPathComponent("\(id)")
-        
+        print("url: \(url)")
         URLSession.fetchJsonData(T.self, url: url) { result in
             completion(result)
         }
     }
     
-    func fetchContent<T: WordpressContent>(_ type: T.Type, postedAfter: Date? = nil, postedBefore: Date? = nil, orderBy: WordpressOrderBy? = nil, order: WordpressOrder? = nil, startPage: Int = 1, perPage: Int? = nil, maxNumPages: Int? = nil, batchCompletion: @escaping (Result<[T], Error>) -> Void, completion: (() -> Void)? = nil) {
+    public func fetchContent<T: WordpressContent>(_ type: T.Type, postedAfter: Date? = nil, postedBefore: Date? = nil, orderBy: WordpressOrderBy? = nil, order: WordpressOrder? = nil, startPage: Int = 1, perPage: Int? = nil, maxNumPages: Int? = nil, batchCompletion: @escaping (Result<[T], Error>) -> Void, completion: (() -> Void)? = nil) {
         guard startPage > 0 else {
             print("ERROR - start page must be greater than zero")
             return
@@ -129,7 +92,7 @@ class WordpressSite: ObservableObject {
         fetchWithPagination(urlComponents: urlComponents, batchCompletion: batchCompletion, completion: completion)
     }
     
-    func fetchItems<T: WordpressItem>(_ type: T.Type, batchCompletion: @escaping (Result<[T], Error>) -> Void, completion: (() -> Void)? = nil) {
+    public func fetchItems<T: WordpressItem>(_ type: T.Type, batchCompletion: @escaping (Result<[T], Error>) -> Void, completion: (() -> Void)? = nil) {
         let baseUrl = restAPIv2Url.appendingPathComponent(T.urlComponent)
         guard var urlComponents = URLComponents(url: baseUrl, resolvingAgainstBaseURL: true) else {
             print("ERROR - bad URL")
@@ -144,7 +107,7 @@ class WordpressSite: ObservableObject {
         fetchWithPagination(urlComponents: urlComponents, batchCompletion: batchCompletion, completion: completion)
     }
     
-    func fetchAllItems<T: WordpressItem>(_ type: T.Type, completion: @escaping (Result<[T], Error>) -> Void) {
+    public func fetchAllItems<T: WordpressItem>(_ type: T.Type, completion: @escaping (Result<[T], Error>) -> Void) {
         var allItems = [T]()
         var fetchError: Error? = nil
         
@@ -165,13 +128,12 @@ class WordpressSite: ObservableObject {
         }
     }
     
-    private func fetchWithPagination<T: WordpressItem>(urlComponents: URLComponents, startPage: Int = 1, maxNumPages: Int? = nil, batchCompletion: @escaping (Result<[T], Error>) -> Void, completion: (() -> Void)? = nil) {
+    public func fetchWithPagination<T: WordpressItem>(urlComponents: URLComponents, startPage: Int = 1, maxNumPages: Int? = nil, batchCompletion: @escaping (Result<[T], Error>) -> Void, completion: (() -> Void)? = nil) {
         guard let url = urlComponents.url else {
             print("ERROR - bad URL from urlComponents")
             return
         }
-//        print("fetchWithPagination")
-//        print(url.absoluteURL)
+
         URLSession.fetchHeader(url: url, forHTTPHeaderField: Self.totalPagesHeader) { result in
             switch result {
             case .success(let result):
@@ -179,8 +141,8 @@ class WordpressSite: ObservableObject {
                     print("Error - numPages not a valid Int")
                     return
                 }
+                print("**WordpressReader fetchWithPagination \(T.self)**")
                 print(url.absoluteURL)
-                print(totalPages)
                 guard totalPages > 0 else {
                     completion?()
                     print("zero pages")
@@ -215,69 +177,7 @@ class WordpressSite: ObservableObject {
         }
     }
     
-    // Loads a single post by id
-    func loadPost(id: Int, completion: (() -> Void)? = nil) {
-        fetchById(WordpressPost.self, id: id) { result in
-            switch result {
-            case .success(let post):
-                DispatchQueue.main.async {
-                    self.currentPost = post
-                }
-            case .failure(let error):
-                print("Error loadPost")
-                self.processError(error)
-            }
-            completion?()
-        }
-    }
-    
-    // Loads up to 100 posts without batching
-    func loadPosts(amount: Int = 10, completion: (() -> Void)? = nil) {
-        fetchContent(WordpressPost.self, perPage: amount, maxNumPages: 1) { result in
-            switch result {
-            case .success(let posts):
-                DispatchQueue.main.async {
-                    self.posts = posts
-                }
-            case .failure(let error):
-                print("Error loadPosts")
-                self.processError(error)
-            }
-        }
-    }
-    
-    // Loads up to 100 pages without batching
-    func loadPages(amount: Int = 10, completion: (() -> Void)? = nil) {
-        fetchContent(WordpressPage.self, perPage: amount, maxNumPages: 1) { result in
-            switch result {
-            case .success(let pages):
-                DispatchQueue.main.async {
-                    self.pages = pages
-                }
-            case .failure(let error):
-                print("Error loadPosts")
-                self.processError(error)
-            }
-        }
-    }
-    
-    // Loads all categories using batching
-    func loadCategories(completion: (() -> Void)? = nil) {
-        fetchAllItems(WordpressCategory.self) { result in
-            switch result {
-            case .success(let result):
-                DispatchQueue.main.async {
-                    self.categories = result
-                }
-            case .failure(let error):
-                print("Error loadCategories")
-                self.processError(error)
-            }
-            completion?()
-        }
-    }
-    
-    func processError(_ error: Error) {
+    private func processError(_ error: Error) {
         switch error {
         case NetworkError.badURL:
             print("Bad URL")
@@ -292,9 +192,9 @@ class WordpressSite: ObservableObject {
         }
     }
     
-    static let isoDateFormatter = ISO8601DateFormatter()
+    private static let isoDateFormatter = ISO8601DateFormatter()
     
-    static let gmtDateFormatter: DateFormatter = {
+    public static let gmtDateFormatter: DateFormatter = {
         let dateFormatter = DateFormatter()
         if let timeZone = Calendar.gmt?.timeZone {
             dateFormatter.timeZone = timeZone
