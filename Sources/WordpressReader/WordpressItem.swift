@@ -14,6 +14,10 @@ public protocol WordpressItem: Codable, Identifiable, Hashable, Comparable, Para
     var slug: String { get }
     
     static var urlComponent: String { get }
+    
+    func hash(into hasher: inout Hasher)
+    
+    static func == (lhs: Self, rhs: Self) -> Bool
 }
 
 @available (iOS 13, macOS 10.15, *)

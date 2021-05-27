@@ -16,6 +16,11 @@ public protocol WordpressContent: WordpressItem {
     var title: RenderedContent { get }
     var content: RenderedContent { get }
     var excerpt: RenderedContent { get }
+    var slugCleaned: String { get }
+    var titleCleaned: String { get }
+    var contentHtml: String { get }
+    
+    static func < (lhs: Self, rhs: Self) -> Bool
 }
 
 @available (iOS 13, macOS 10.15, *)
