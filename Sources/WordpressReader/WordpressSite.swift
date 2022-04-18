@@ -8,11 +8,19 @@
 import Foundation
 
 public enum WordpressOrderBy: String {
-    case date, modified
+    /// (Default) Date an item was posted
+    case date
+    
+    /// Date an item was modified
+    case modified
 }
 
 public enum WordpressOrder: String {
-    case asc, desc
+    /// Ascending order. Loads oldest dates first
+    case asc
+    
+    /// (Default) Descending order. Loads newest dates first
+    case desc
 }
 
 /// A type that allows API access to a provided site on Wordpress.com

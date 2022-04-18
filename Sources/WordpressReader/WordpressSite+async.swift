@@ -34,28 +34,33 @@ public extension WordpressSite {
         return URLComponents(url: baseUrl, resolvingAgainstBaseURL: true)
     }
     
-    func fetchPaginatedUrls<T: WordpressItem>(_ type: T.Type, request: WordpressRequest) async throws -> [URL] {
+    func fetchPaginatedUrls<T: WordpressItem>(_ type: T.Type, request: WordpressRequest<T>) async throws -> [URL] {
         guard var urlComponents = restAPIv2UrlComponents(type) else {
             throw WordpressError.BadURL
         }
-        urlComponents.queryItems = request.urlQueryItems
         
-        guard let url = urlComponents.url else {
-            throw RequestError.badURLComponents
-        }
+        let pageRange: ClosedRange<Int>?
         
-        let header = try await request.urlSession.fetchHeader(url: url, forHTTPHeaderField: Self.totalPagesHeader)
-        
-        guard let totalPages = Int(header) else {
-            throw WordpressError.APIError(details: "Total pages in header not a valid Integer")
-        }
-        
-        guard let pageRange = request.pageRange(total: totalPages) else {
-            return []
+        if let page = request.queryItems.page {
+            pageRange = page...page
+        } else {
+            urlComponents.queryItems = request.urlQueryItems
+            
+            guard let url = urlComponents.url else {
+                throw RequestError.badURLComponents
+            }
+            
+            let header = try await request.urlSession.fetchHeader(url: url, forHTTPHeaderField: Self.totalPagesHeader)
+            
+            guard let totalPages = Int(header) else {
+                throw WordpressError.APIError(details: "Total pages in header not a valid Integer")
+            }
+            
+            pageRange = request.pageRange(total: totalPages)
         }
         
         // Confirm all page URLs are valid
-        return try pageRange.map { page -> URL in
+        return try pageRange?.map { page -> URL in
             var pageUrlComponents = urlComponents
             pageUrlComponents.queryItems = request.urlQueryItems(page)
 
@@ -63,14 +68,14 @@ public extension WordpressSite {
                 throw WordpressError.BadURL
             }
             return url
-        }
+        } ?? []
     }
     
     func items<T: WordpressItem>(
         urlSession: URLSession = .shared,
         _ type: T.Type,
         urls: [URL]
-    ) async -> AsyncThrowingStream<[T], Error> {
+    ) async -> AsyncThrowingStream<T, Error> {
         AsyncThrowingStream { continuation in
             Task {
                 try await withThrowingTaskGroup(of: [T].self) { group in
@@ -85,7 +90,8 @@ public extension WordpressSite {
                     }
                     
                     for try await batch in group {
-                        continuation.yield(batch)
+                        batch.forEach { continuation.yield($0) }
+//                        continuation.yield(batch)
                     }
                     continuation.finish()
                 }
@@ -116,29 +122,31 @@ public extension WordpressSite {
     
     func items<T: WordpressItem>(
         _ type: T.Type,
-        request: WordpressRequest = .init()
+        request: WordpressRequest<T>? = nil
     ) async throws -> [T] {
+        let request = request ?? type.request()
         let urls = try await fetchPaginatedUrls(type, request: request)
         return try await items(urlSession: request.urlSession, type, urls: urls)
     }
     
     func stream<T: WordpressItem>(
         _ type: T.Type,
-        request: WordpressRequest = .init()
-    ) async throws -> AsyncThrowingStream<[T], Error> {
+        request: WordpressRequest<T>? = nil
+    ) async throws -> AsyncThrowingStream<T, Error> {
+        let request = request ?? type.request()
         let urls = try await fetchPaginatedUrls(type, request: request)
-        return try await items(type, urls: urls)
+        return await items(type, urls: urls)
     }
     
-    func postStream(_ request: WordpressRequest = .init()) async throws -> AsyncThrowingStream<[WordpressPost], Error> {
+    func postStream(_ request: WordpressRequest<WordpressPost>? = nil) async throws -> AsyncThrowingStream<WordpressPost, Error> {
         try await stream(WordpressPost.self, request: request)
     }
     
-    func pageStream(_ request: WordpressRequest = .init()) async throws -> AsyncThrowingStream<[WordpressPage], Error> {
+    func pageStream(_ request: WordpressRequest<WordpressPage>? = nil) async throws -> AsyncThrowingStream<WordpressPage, Error> {
         try await stream(WordpressPage.self, request: request)
     }
     
-    func categoryStream(_ request: WordpressRequest = .init()) async throws -> AsyncThrowingStream<[WordpressCategory], Error> {
+    func categoryStream(_ request: WordpressRequest<WordpressCategory>? = nil) async throws -> AsyncThrowingStream<WordpressCategory, Error> {
         try await stream(WordpressCategory.self, request: request)
     }
 }

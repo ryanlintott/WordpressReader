@@ -69,19 +69,34 @@ public extension WordpressQueryItem {
     static func order(_ value: WordpressOrder) -> Self {
         .init("order", value.rawValue)
     }
-}
-
-internal extension WordpressQueryItem {
+    
     static func perPage(_ value: Int) -> Self {
         .int("per_page", value)
     }
+}
+
+internal extension WordpressQueryItem {
     static func page(_ value: Int) -> Self {
         .int("page", value)
     }
 }
 
-public extension Array where Element == WordpressQueryItem {
+public extension Collection where Element == WordpressQueryItem {
     var urlQueryItems: [URLQueryItem] {
         self.map { $0.urlQueryItem }
+    }
+    
+    var fields: [String]? {
+        guard let string = self.first(where: { $0.name == WordpressQueryItem.fields([]).name })?.value else {
+            return nil
+        }
+        return string.split(separator: ",").map { String($0) }
+    }
+    
+    var page: Int? {
+        guard let string = self.first(where: { $0.name == WordpressQueryItem.page(0).name })?.value else {
+            return nil
+        }
+        return Int(string)
     }
 }

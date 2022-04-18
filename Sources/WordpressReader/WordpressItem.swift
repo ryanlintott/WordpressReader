@@ -14,3 +14,9 @@ public protocol WordpressItem: Codable, Identifiable, Hashable, Comparable, Para
     
     static var urlComponent: String { get }
 }
+
+public extension WordpressItem {
+    static func request(queryItems: Set<WordpressQueryItem> = []) -> WordpressRequest<Self> {
+        WordpressRequest<Self>(queryItems: queryItems)
+    }
+}
