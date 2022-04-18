@@ -15,32 +15,56 @@ public enum WordpressOrder: String {
     case asc, desc
 }
 
-@available (iOS 13, macOS 10.15, *)
+/// A type that allows API access to a provided site on Wordpress.com
+///
+/// Does not yet work for sites hosted outside Wordpress.com.
 public struct WordpressSite {
+    /// Site domain excluding http or other prefix.
+    ///
+    /// Example: `"example.com"`
     public let domain: String
+    
+    /// Name of the site. (Just used as a label)
     public let name: String
+    
+    /// URL to access REST API v1.1 for this site
     public let restAPIv1_1Url: URL
+    
+    /// URL to access REST API v2 for this site
     public let restAPIv2Url: URL
-    public let settingsUrl: URL
     
-    // only works for wordpress.com sites for now so always true
-    let dotCom: Bool = true
-    
+    /// Creates a type that allows API access to the provided wordpress.com domain
+    /// - Parameters:
+    ///   - domain: Wordpress site domain. Example: "example.com"
+    ///   - name: Name of the site.
     public init(domain: String, name: String) {
         self.domain = domain
         self.name = name
         restAPIv1_1Url = Self.wordpressDotComRestAPIv1_1Prefix.appendingPathComponent(domain)
         restAPIv2Url = Self.wordpressDotComRestAPIv2Prefix.appendingPathComponent(domain)
-        settingsUrl = restAPIv1_1Url
     }
     
-    static let wordpressDotComRestAPIv2Prefix = URL(staticString: "https://public-api.wordpress.com/wp/v2/sites")
+    /// Prefix for accessing wordpress REST API v1.1
     static let wordpressDotComRestAPIv1_1Prefix = URL(staticString: "https://public-api.wordpress.com/rest/v1.1/sites")
+    /// Prefix for accessing wordpress REST API v2
+    static let wordpressDotComRestAPIv2Prefix = URL(staticString: "https://public-api.wordpress.com/wp/v2/sites")
     static let totalPagesHeader: String = "X-WP-TotalPages"
     
+    /// URL to use when accessing site settings
+    var settingsUrl: URL {
+        restAPIv1_1Url
+    }
     
     public func fetchSettings(completion: @escaping (Result<WordpressSettings, Error>) -> Void) {
-        URLSession.fetchJsonData(WordpressSettings.self, url: settingsUrl, dateDecodingStrategy: .formatted(Self.gmtDateFormatter)) { result in
+        let gmtDateFormatter: DateFormatter
+        do {
+            gmtDateFormatter = try self.gmtDateFormatter
+        } catch(let error) {
+            completion(.failure(error))
+            return
+        }
+        
+        URLSession.shared.fetchJsonData(WordpressSettings.self, url: settingsUrl, dateDecodingStrategy: .formatted(gmtDateFormatter)) { result in
             completion(result)
         }
     }
@@ -50,11 +74,12 @@ public struct WordpressSite {
             .appendingPathComponent(type.urlComponent)
             .appendingPathComponent("\(id)")
         print("url: \(url)")
-        URLSession.fetchJsonData(T.self, url: url) { result in
+        URLSession.shared.fetchJsonData(T.self, url: url) { result in
             completion(result)
         }
     }
     
+    @available(*, renamed: "fetchContent(_:postedAfter:postedBefore:modifiedAfter:modifiedBefore:orderBy:order:startPage:perPage:maxNumPages:completion:)")
     public func fetchContent<T: WordpressContent>(
         _ type: T.Type,
         postedAfter: Date? = nil,
@@ -153,9 +178,17 @@ public struct WordpressSite {
             return
         }
 
-        URLSession.fetchHeader(url: url, forHTTPHeaderField: Self.totalPagesHeader) { result in
+        URLSession.shared.fetchHeader(url: url, forHTTPHeaderField: Self.totalPagesHeader) { result in
             switch result {
             case .success(let result):
+                let gmtDateFormatter: DateFormatter
+                do {
+                    gmtDateFormatter = try self.gmtDateFormatter
+                } catch(let error) {
+                    batchCompletion(.failure(error))
+                    return
+                }
+                
                 guard let totalPages = Int(result) else {
                     print("Error - numPages not a valid Int")
                     return
@@ -181,7 +214,7 @@ public struct WordpressSite {
                         print("ERROR - bad URL from pageUrlComponents")
                         return
                     }
-                    URLSession.fetchJsonData([T].self, url: pageUrl, dateDecodingStrategy: .formatted(Self.gmtDateFormatter)) { result in
+                    URLSession.shared.fetchJsonData([T].self, url: pageUrl, dateDecodingStrategy: .formatted(gmtDateFormatter)) { result in
                         batchCompletion(result)
                         sessions -= 1
                         if sessions == 0 {
@@ -202,8 +235,8 @@ public struct WordpressSite {
             print("Bad URL")
         case NetworkError.requestFailed:
             print("Network problems: \(error.localizedDescription)")
-        case NetworkError.unknown:
-            print("Unknown network error: \(error.localizedDescription)")
+        case NetworkError.unknown(let description):
+            print(description)
         case is DecodingError:
             print("Decoding error: \(error.localizedDescription)")
         default:
@@ -213,12 +246,24 @@ public struct WordpressSite {
     
     private static let isoDateFormatter = ISO8601DateFormatter()
     
-    public static let gmtDateFormatter: DateFormatter = {
-        let dateFormatter = DateFormatter()
-        if let timeZone = Calendar.gmt?.timeZone {
+    static let isoDateValueBuilder: (Date) -> String = {
+        ISO8601DateFormatter().string(from: $0)
+    }
+    
+    public var gmtDateDecodingStrategy: JSONDecoder.DateDecodingStrategy {
+        .wordpressDate
+    }
+    
+    public var gmtDateFormatter: DateFormatter {
+        get throws {
+            guard let timeZone = Calendar.gmt?.timeZone else {
+                throw WordpressError.APIError(details: "GMT timezone not accessible.")
+            }
+
+            let dateFormatter = DateFormatter()
             dateFormatter.timeZone = timeZone
+            dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss'Z'"
+            return dateFormatter
         }
-        dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss'Z'"
-        return dateFormatter
-    }()
+    }
 }

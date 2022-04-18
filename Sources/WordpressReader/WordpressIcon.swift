@@ -7,7 +7,6 @@
 
 import Foundation
 
-@available (iOS 13, *)
 public struct WordpressIcon: Codable, ParameterLabels {
     public static var labelMaker: WordpressIcon = WordpressIcon(img: "", ico: "")
     

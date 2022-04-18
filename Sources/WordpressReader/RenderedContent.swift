@@ -7,7 +7,6 @@
 
 import Foundation
 
-@available (iOS 13, *)
 public struct RenderedContent: Codable, Hashable, Equatable, ParameterLabels {
     public static var labelMaker: RenderedContent = RenderedContent(rendered: "")
     

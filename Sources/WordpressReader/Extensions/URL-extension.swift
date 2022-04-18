@@ -1,6 +1,6 @@
 //
 //  URL-extension.swift
-//  Wordhord
+//  WordpressReader
 //
 //  Created by Ryan Lintott on 2020-09-15.
 //
@@ -13,7 +13,7 @@ internal extension URL {
         guard let url = URL(string: "\(string)") else {
             preconditionFailure("Invalid static URL string: \(string)")
         }
-
+        
         self = url
     }
 }

@@ -7,7 +7,6 @@
 
 import Foundation
 
-@available (iOS 13, macOS 10.15, *)
 public struct WordpressCategory: WordpressItem {
     public static var labelMaker: WordpressCategory = WordpressCategory(id: 0, count: 0, description: "", link: "", name: "", slug: "")
     

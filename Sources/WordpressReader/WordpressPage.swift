@@ -7,7 +7,6 @@
 
 import Foundation
 
-@available (iOS 13, macOS 10.15, *)
 public struct WordpressPage: WordpressContent {
     public static var labelMaker: WordpressPage = WordpressPage(id: 0, date_gmt: Date(), modified_gmt: Date(), slug: "", link: "", title: .labelMaker, content: .labelMaker, excerpt: .labelMaker)
     

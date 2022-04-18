@@ -7,7 +7,6 @@
 
 import Foundation
 
-@available (iOS 13, macOS 10.15, *)
 public protocol WordpressContent: WordpressItem {
     var date_gmt: Date { get }
     var modified_gmt: Date { get }
@@ -23,7 +22,6 @@ public protocol WordpressContent: WordpressItem {
     static func < (lhs: Self, rhs: Self) -> Bool
 }
 
-@available (iOS 13, macOS 10.15, *)
 extension WordpressContent {
     public var slugCleaned: String {
         slug.removingPercentEncoding ?? slug

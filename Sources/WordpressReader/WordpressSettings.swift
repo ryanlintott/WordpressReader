@@ -7,7 +7,6 @@
 
 import Foundation
 
-@available (iOS 13, *)
 public struct WordpressSettings: Codable, Identifiable, ParameterLabels {
     public static var labelMaker: WordpressSettings = WordpressSettings(ID: 0, name: "", description: "", URL: "", icon: .labelMaker, logo: .labelMaker)
     
