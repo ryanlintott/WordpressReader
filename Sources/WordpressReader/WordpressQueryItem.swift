@@ -1,83 +1,90 @@
 //
-//  File.swift
+//  WordpressQueryItem.swift
 //  
 //
-//  Created by Ryan Lintott on 2022-03-17.
+//  Created by Ryan Lintott on 2022-04-27.
 //
 
-import Foundation
+import SwiftUI
 
-public struct WordpressQueryItem: Hashable, Comparable, Equatable {
-    public static func == (lhs: Self, rhs: Self) -> Bool {
-        lhs.name == rhs.name && lhs.value == rhs.value
-    }
+public enum WordpressOrderBy: String {
+    /// (Default) Date an item was posted
+    case date
     
-    public static func < (lhs: Self, rhs: Self) -> Bool {
-        lhs.name < rhs.name
-    }
+    /// Date an item was modified
+    case modified
+}
+
+public enum WordpressOrder: String {
+    /// Ascending order. Loads oldest dates first
+    case asc
     
-    public func hash(into hasher: inout Hasher) {
-        hasher.combine(name)
-    }
-    
-    public let name: String
-    public let value: String
-    
-    fileprivate init(_ name: String, _ value: String) {
-        self.name = name
-        self.value = value
-    }
-    
-    public var urlQueryItem: URLQueryItem {
-        URLQueryItem(name: name, value: value)
-    }
-    
-    fileprivate static func date(_ name: String, _ date: Date) -> Self {
-        .init(name, ISO8601DateFormatter().string(from: date))
-    }
-    
-    fileprivate static func int(_ name: String, _ int: Int) -> Self {
-        .init(name, "\(int)")
-    }
+    /// (Default) Descending order. Loads newest dates first
+    case desc
+}
+
+public enum WordpressQueryItem: Hashable, Comparable, Equatable {
+    case fields([String])
+    case postedAfter(Date)
+    case postedBefore(Date)
+    case modifiedAfter(Date)
+    case modifiedBefore(Date)
+    case orderBy(WordpressOrderBy)
+    case order(WordpressOrder)
+    case perPage(Int)
+    case page(Int)
+    case custom(name: String, value: String)
 }
 
 public extension WordpressQueryItem {
-    static func fields(_ value: [String]) -> Self {
-        .init("_fields", value.joined(separator: ","))
+    var name: String {
+        switch self {
+        case .fields: return "_fields"
+        case .postedAfter: return "after"
+        case .postedBefore: return "before"
+        case .modifiedAfter: return "modified_after"
+        case .modifiedBefore: return "modified_before"
+        case .orderBy: return "orderBy"
+        case .order: return "order"
+        case .perPage: return "per_page"
+        case .page: return "page"
+        case let .custom(key, _): return key
+        }
     }
     
-    static func postedAfter(_ value: Date) -> Self {
-        .date("after", value)
+    var value: String {
+        switch self {
+        case .fields(let value): return value.joined(separator: ",")
+        case .postedAfter(let value),
+                .postedBefore(let value),
+                .modifiedAfter(let value),
+                .modifiedBefore(let value): return Self.dateString(value)
+        case .orderBy(let value): return value.rawValue
+        case .order(let value): return value.rawValue
+        case .perPage(let value),
+                .page(let value): return String(value)
+        case let .custom(_, value): return value
+        }
     }
     
-    static func postedBefore(_ value: Date) -> Self {
-        .date("before", value)
+    var urlQueryItem: URLQueryItem {
+        URLQueryItem(name: name, value: value)
     }
     
-    static func modifiedAfter(_ value: Date) -> Self {
-        .date("modified_after", value)
+    fileprivate static func dateString(_ date: Date) -> String {
+        ISO8601DateFormatter().string(from: date)
     }
     
-    static func modifiedBefore(_ value: Date) -> Self {
-        .date("modified_before", value)
+    static func == (lhs: Self, rhs: Self) -> Bool {
+        lhs.name == rhs.name && lhs.value == rhs.value
     }
     
-    static func orderBy(_ value: WordpressOrderBy) -> Self {
-        .init("orderBy", value.rawValue)
+    static func < (lhs: Self, rhs: Self) -> Bool {
+        lhs.name < rhs.name
     }
     
-    static func order(_ value: WordpressOrder) -> Self {
-        .init("order", value.rawValue)
-    }
-    
-    static func perPage(_ value: Int) -> Self {
-        .int("per_page", value)
-    }
-}
-
-internal extension WordpressQueryItem {
-    static func page(_ value: Int) -> Self {
-        .int("page", value)
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(name)
     }
 }
 
@@ -87,16 +94,23 @@ public extension Collection where Element == WordpressQueryItem {
     }
     
     var fields: [String]? {
-        guard let string = self.first(where: { $0.name == WordpressQueryItem.fields([]).name })?.value else {
-            return nil
+        let fieldValues: [[String]] = compactMap {
+            guard case .fields(let value) = $0 else { return nil }
+            return value
         }
-        return string.split(separator: ",").map { String($0) }
+        return fieldValues.isEmpty ? nil : fieldValues.reduce(into: []) { $0 += $1 }
     }
     
-    var page: Int? {
-        guard let string = self.first(where: { $0.name == WordpressQueryItem.page(0).name })?.value else {
-            return nil
+    var pages: [Int] {
+        compactMap {
+            guard case .page(let value) = $0 else { return nil }
+            return value
         }
-        return Int(string)
+    }
+}
+
+public extension Set where Element == WordpressQueryItem {
+    var page: Int? {
+        pages.first
     }
 }

@@ -16,6 +16,9 @@ public protocol WordpressItem: Codable, Identifiable, Hashable, Comparable, Para
 }
 
 public extension WordpressItem {
+    /// Creates a wordpress request for this item type.
+    /// - Parameter queryItems: Query items to use in this request.
+    /// - Returns: A wordpress request for this item type.
     static func request(queryItems: Set<WordpressQueryItem> = []) -> WordpressRequest<Self> {
         WordpressRequest<Self>(queryItems: queryItems)
     }
