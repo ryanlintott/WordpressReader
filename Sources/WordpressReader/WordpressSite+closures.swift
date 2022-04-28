@@ -75,8 +75,8 @@ extension WordpressSite {
             request.maxPages = maxNumPages
             
             do {
-                for try await item in try await itemStream(request) {
-                    batchCompletion(.success([item]))
+                for try await batch in try await itemStream(request) {
+                    batchCompletion(.success(batch))
                 }
                 completion?()
             } catch let error {
@@ -91,8 +91,8 @@ extension WordpressSite {
         Task {
             let request = WordpressRequest<T>()
             do {
-                for try await item in try await itemStream(request) {
-                    batchCompletion(.success([item]))
+                for try await batch in try await itemStream(request) {
+                    batchCompletion(.success(batch))
                 }
                 completion?()
             } catch let error {

@@ -50,7 +50,7 @@ extension WordpressSite {
         urlSession: URLSession = .shared,
         _ type: T.Type,
         urls: [URL]
-    ) async -> AsyncThrowingStream<T, Error> {
+    ) async -> AsyncThrowingStream<[T], Error> {
         AsyncThrowingStream { continuation in
             Task {
                 try await withThrowingTaskGroup(of: [T].self) { group in
@@ -63,7 +63,7 @@ extension WordpressSite {
                     }
                     
                     for try await batch in group {
-                        batch.forEach { continuation.yield($0) }
+                        continuation.yield(batch)
                     }
                     continuation.finish()
                 }
@@ -76,6 +76,6 @@ extension WordpressSite {
         _ type: T.Type,
         urls: [URL]
     ) async throws -> [T] {
-        try await itemStream(urlSession: urlSession, type, urls: urls).reduce(into: [], { $0.append($1) })
+        try await itemStream(urlSession: urlSession, type, urls: urls).reduce(into: [], { $0 += $1 })
     }
 }

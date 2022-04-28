@@ -30,20 +30,20 @@ extension WordpressSite {
     
     public func itemStream<T: WordpressItem>(
         _ request: WordpressRequest<T>
-    ) async throws -> AsyncThrowingStream<T, Error> {
+    ) async throws -> AsyncThrowingStream<[T], Error> {
         let urls = try await fetchPaginatedUrls(request)
         return await itemStream(T.self, urls: urls)
     }
     
-    public func postStream(_ request: WordpressRequest<WordpressPost>? = nil) async throws -> AsyncThrowingStream<WordpressPost, Error> {
+    public func postStream(_ request: WordpressRequest<WordpressPost>? = nil) async throws -> AsyncThrowingStream<[WordpressPost], Error> {
         try await itemStream(request ?? WordpressPost.request())
     }
     
-    public func pageStream(_ request: WordpressRequest<WordpressPage>? = nil) async throws -> AsyncThrowingStream<WordpressPage, Error> {
+    public func pageStream(_ request: WordpressRequest<WordpressPage>? = nil) async throws -> AsyncThrowingStream<[WordpressPage], Error> {
         try await itemStream(request ?? WordpressPage.request())
     }
     
-    public func categoryStream(_ request: WordpressRequest<WordpressCategory>? = nil) async throws -> AsyncThrowingStream<WordpressCategory, Error> {
+    public func categoryStream(_ request: WordpressRequest<WordpressCategory>? = nil) async throws -> AsyncThrowingStream<[WordpressCategory], Error> {
         try await itemStream(request ?? WordpressCategory.request())
     }
     
