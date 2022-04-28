@@ -17,20 +17,6 @@ internal extension URLSession {
                 completion(.failure(error))
             }
         }
-//        let request = URLRequest(url: url)
-        
-//        self.dataTask(with: request) { data, response, error in
-//            guard let data = data else {
-//                if error != nil {
-//                    completion(.failure(NetworkError.requestFailed))
-//                } else {
-//                    completion(.failure(NetworkError.unknown()))
-//                }
-//                return
-//            }
-//
-//            completion(.success(data))
-//        }.resume()
     }
     
     func fetchData(from urlString: String, completion: @escaping (Result<(Data, URLResponse), Error>) -> Void) {
