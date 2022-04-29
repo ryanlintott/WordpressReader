@@ -1,6 +1,6 @@
 //
-//  File.swift
-//  
+//  WordpressSite+closures.swift
+//  WordpressReader
 //
 //  Created by Ryan Lintott on 2022-04-27.
 //
@@ -75,7 +75,7 @@ extension WordpressSite {
             request.maxPages = maxNumPages
             
             do {
-                for try await batch in try await itemStream(request) {
+                for try await batch in try await stream(request) {
                     batchCompletion(.success(batch))
                 }
                 completion?()
@@ -91,7 +91,7 @@ extension WordpressSite {
         Task {
             let request = WordpressRequest<T>()
             do {
-                for try await batch in try await itemStream(request) {
+                for try await batch in try await stream(request) {
                     batchCompletion(.success(batch))
                 }
                 completion?()
@@ -106,7 +106,7 @@ extension WordpressSite {
     public func fetchAllItems<T: WordpressItem>(_ type: T.Type, completion: @escaping (Result<[T], Error>) -> Void) {
         Task {
             do {
-                let result = try await fetchItems(type)
+                let result = try await fetch(type)
                 completion(.success(result))
             } catch {
                 completion(.failure(error))

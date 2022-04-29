@@ -1,6 +1,6 @@
 //
-//  File.swift
-//  
+//  WordpressSite+async-public.swift
+//  WordpressReader
 //
 //  Created by Ryan Lintott on 2022-03-11.
 //
@@ -8,6 +8,10 @@
 import Foundation
 
 extension WordpressSite {
+    /// Returns Wordpress settings for this site.
+    /// - Parameter urlSession: URL session to use for this request.
+    /// - Returns: Wordpress settings.
+    /// - Throws: NetworkError if there is a bad response or DecodingError if the type cannot be decoded.
     public func fetchSettings(urlSession: URLSession = .shared) async throws -> WordpressSettings {
         try await urlSession.fetchJsonData(
             WordpressSettings.self,
@@ -16,6 +20,13 @@ extension WordpressSite {
         )
     }
     
+    /// Returns a Wordpress item matching a supplied unique identifier.
+    /// - Parameters:
+    ///   - urlSession: URL session to use for this request.
+    ///   - type: Type of Wordpress Item.
+    ///   - id: Unique identifier for Wordpress Item.
+    /// - Returns: A Wordpress item matching a supplied unique identifier.
+    /// - Throws: NetworkError if there is a bad response or DecodingError if the type cannot be decoded.
     public func fetchById<T: WordpressItem>(
         urlSession: URLSession = .shared,
         _ type: T.Type,
@@ -28,47 +39,41 @@ extension WordpressSite {
         return try await urlSession.fetchJsonData(T.self, url: url)
     }
     
-    public func itemStream<T: WordpressItem>(
+    /// Asynchronously returns an asynchronous throwing stream of arrays of Wordpress items.
+    ///
+    /// The throwing asynchronous stream returns batches that correspond to pages from the Wordpress API and will finish when all batches have completed. They may throw a NetworkError if there are URL errors, badly formatted query items, or a bad response or a DecodingError if the JSON doesn't match the Wordpress item.
+    /// - Parameter request: Wordpress request used to retrieve Wordpress items.
+    /// - Returns: An asynchronous throwing stream of arrays of Wordpress items.
+    /// - Throws: NetworkError, WordpressError, or DecodingError.
+    public func stream<T: WordpressItem>(
         _ request: WordpressRequest<T>
     ) async throws -> AsyncThrowingStream<[T], Error> {
         let urls = try await fetchPaginatedUrls(request)
         return await itemStream(T.self, urls: urls)
     }
     
-    public func postStream(_ request: WordpressRequest<WordpressPost>? = nil) async throws -> AsyncThrowingStream<[WordpressPost], Error> {
-        try await itemStream(request ?? WordpressPost.request())
-    }
-    
-    public func pageStream(_ request: WordpressRequest<WordpressPage>? = nil) async throws -> AsyncThrowingStream<[WordpressPage], Error> {
-        try await itemStream(request ?? WordpressPage.request())
-    }
-    
-    public func categoryStream(_ request: WordpressRequest<WordpressCategory>? = nil) async throws -> AsyncThrowingStream<[WordpressCategory], Error> {
-        try await itemStream(request ?? WordpressCategory.request())
-    }
-    
-    public func fetchItems<T: WordpressItem>(
+    /// Asynchronously returns an array of Wordpress items.
+    ///
+    /// Use itemStream() if you want to retrieve item batches in an asynchronous stream.
+    /// - Parameter request: Wordpress request used to retrieve Wordpress items.
+    /// - Returns: An array of Wordpress items asynchronously.
+    /// - Throws: NetworkError, WordpressError, or DecodingError.
+    public func fetch<T: WordpressItem>(
         _ request: WordpressRequest<T>
     ) async throws -> [T] {
         let urls = try await fetchPaginatedUrls(request)
         return try await fetchItems(urlSession: request.urlSession, T.self, urls: urls)
     }
     
-    public func fetchItems<T: WordpressItem>(
+    /// Asynchronously returns an array of Wordpress items.
+    ///
+    /// Use itemStream() if you want to retrieve item batches in an asynchronous stream.
+    /// - Parameter type: The type of Wordpress item to retrieve using a default request.
+    /// - Returns: An array of Wordpress items asynchronously.
+    /// - Throws: NetworkError, WordpressError, or DecodingError.
+    public func fetch<T: WordpressItem>(
         _ type: T.Type
     ) async throws -> [T] {
-        try await fetchItems(T.self.request())
-    }
-    
-    public func fetchPosts(_ request: WordpressRequest<WordpressPost> = WordpressPost.request()) async throws -> [WordpressPost] {
-        try await fetchItems(request)
-    }
-    
-    public func fetchPages(_ request: WordpressRequest<WordpressPage> = WordpressPage.request()) async throws -> [WordpressPage] {
-        try await fetchItems(request)
-    }
-    
-    public func fetchCategories(_ request: WordpressRequest<WordpressCategory> = WordpressCategory.request()) async throws -> [WordpressCategory] {
-        try await fetchItems(request)
+        try await fetch(T.self.request())
     }
 }

@@ -7,8 +7,17 @@
 
 import Foundation
 
+/// Rendered HTML content from the Wordpress API
 public struct RenderedContent: Codable, Hashable, Equatable, ParameterLabels {
-    public static var labelMaker: RenderedContent = RenderedContent(rendered: "")
+    public static let labelMaker = Self(rendered: "")
     
+    /// String containing HTML code representing the rendered content on Wordpress.
     public var rendered: String
+}
+
+extension RenderedContent {
+    /// Rendered content removing any percent encoding.
+    public var cleaned: String {
+        rendered.removingPercentEncoding ?? rendered
+    }
 }

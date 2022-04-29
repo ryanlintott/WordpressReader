@@ -1,6 +1,6 @@
 //
 //  WordpressSite.swift
-//  Wordhord
+//  WordpressReader
 //
 //  Created by Ryan Lintott on 2020-09-15.
 //
@@ -10,7 +10,7 @@ import Foundation
 /// A type that allows API access to a provided site on Wordpress.com
 ///
 /// Does not yet work for sites hosted outside Wordpress.com.
-public struct WordpressSite {
+public struct WordpressSite: Codable, Hashable {
     /// Site domain excluding http or other prefix.
     ///
     /// Example: `"example.com"`

@@ -7,8 +7,9 @@
 
 import Foundation
 
-// source: https://www.swiftbysundell.com/articles/constructing-urls-in-swift/
 internal extension URL {
+    /// Creates a URL instance from the provided static string.
+    /// - Parameter string: A static string of the URL
     init(staticString string: StaticString) {
         guard let url = URL(string: "\(string)") else {
             preconditionFailure("Invalid static URL string: \(string)")

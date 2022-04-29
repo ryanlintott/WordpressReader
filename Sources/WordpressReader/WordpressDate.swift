@@ -1,14 +1,15 @@
 //
 //  WordpressDate.swift
-//  
+//  WordpressReader
 //
 //  Created by Ryan Lintott on 2022-04-18.
 //
 
 import Foundation
 
+/// An empty enum for storing Wordpress date formatters
 enum WordpressDate {
-    /// Formatter for Wordpress dates
+    /// Date formatter for Wordpress style dates
     ///
     /// Details: https://core.trac.wordpress.org/ticket/41032
     static let formatter: DateFormatter = {
@@ -19,7 +20,10 @@ enum WordpressDate {
         return formatter
     }()
     
-    static func decodedDate(_ decoder: Decoder) throws -> Date {
+    /// Strategy for decoding Wordpress style dates.
+    /// - Parameter decoder: Decoder to apply strategy to.
+    /// - Returns: Decoded date.
+    static func dateDecodingStrategy(_ decoder: Decoder) throws -> Date {
         let container = try decoder.singleValueContainer()
         let dateAsString = try container.decode(String.self)
 
@@ -32,21 +36,27 @@ enum WordpressDate {
         
         return date
     }
-
-    static func encodeDate(date: Date, encoder: Encoder) throws {
+    
+    /// Strategy for encoding Wordpress style dates.
+    /// - Parameters:
+    ///   - date: Date to encode.
+    ///   - encoder: Encoder to apply strategy to.
+    static func dateEncodingStrategy(date: Date, encoder: Encoder) throws {
         var container = encoder.singleValueContainer()
         try container.encode(formatter.string(from: date))
     }
 }
 
 extension JSONDecoder.DateDecodingStrategy {
+    /// Wordpress style date decoder.
     static var wordpressDate: JSONDecoder.DateDecodingStrategy {
-        .custom(WordpressDate.decodedDate)
+        .custom(WordpressDate.dateDecodingStrategy)
     }
 }
 
 extension JSONEncoder.DateEncodingStrategy {
-    static var wordpressDateFormatter: JSONEncoder.DateEncodingStrategy {
-        .custom(WordpressDate.encodeDate)
+    /// Wordpress style date encoder.
+    static var wordpressDate: JSONEncoder.DateEncodingStrategy {
+        .custom(WordpressDate.dateEncodingStrategy)
     }
 }

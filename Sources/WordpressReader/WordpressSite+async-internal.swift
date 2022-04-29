@@ -1,6 +1,6 @@
 //
-//  File.swift
-//  
+//  WordpressSite+async-internal.swift
+//  WordpressReader
 //
 //  Created by Ryan Lintott on 2022-04-27.
 //
@@ -8,10 +8,14 @@
 import Foundation
 
 extension WordpressSite {
+    /// Asynchronously returns an array of paginated URLs based on the supplied request.
+    /// - Parameter request: Request used to retrieve paginated URLs
+    /// - Returns: An array of paginated URLs based on the supplied request.
+    /// - Throws: NetworkError if there are URL errors or badly formatted query items. WordpressError if there is no totalPages value in the header.
     func fetchPaginatedUrls<T: WordpressItem>(_ request: WordpressRequest<T>) async throws -> [URL] {
         let baseUrl = restAPIv2Url.appendingPathComponent(T.self.urlComponent)
         guard var urlComponents = URLComponents(url: baseUrl, resolvingAgainstBaseURL: true) else {
-            throw WordpressError.BadURL
+            throw NetworkError.badURL
         }
         
         let pageRange: ClosedRange<Int>?
@@ -22,13 +26,13 @@ extension WordpressSite {
             urlComponents.queryItems = request.urlQueryItems
             
             guard let url = urlComponents.url else {
-                throw RequestError.badURLComponents
+                throw NetworkError.badURLComponents
             }
             
             let header = try await request.urlSession.fetchHeader(url: url, forHTTPHeaderField: Self.totalPagesHeader)
             
             guard let totalPages = Int(header) else {
-                throw WordpressError.APIError(details: "Total pages in header not a valid Integer")
+                throw WordpressError.apiError(details: "Total pages in header not a valid Integer")
             }
             
             pageRange = request.pageRange(total: totalPages)
@@ -40,12 +44,20 @@ extension WordpressSite {
             pageUrlComponents.queryItems = request.urlQueryItems(page)
 
             guard let url = pageUrlComponents.url else {
-                throw WordpressError.BadURL
+                throw NetworkError.badURL
             }
             return url
         } ?? []
     }
     
+    /// Returns an asynchronous throwing stream of arrays of Wordpress items.
+    ///
+    /// Each returned array corresponds to a provided URL.
+    /// - Parameters:
+    ///   - urlSession: URL session to use. (default is .shared)
+    ///   - type: Type of Wordpress item to retrieve.
+    ///   - urls: Array of URLs to use when fetching item arrays.
+    /// - Returns: An asynchronous throwing stream of arrays of Wordpress items.
     func itemStream<T: WordpressItem>(
         urlSession: URLSession = .shared,
         _ type: T.Type,
@@ -71,6 +83,13 @@ extension WordpressSite {
         }
     }
     
+    /// Returns an array of Wordpress items based on the combined results of every provided URL request.
+    /// - Parameters:
+    ///   - urlSession: URL session to use. (default is .shared)
+    ///   - type: Type of Wordpress item to retrieve.
+    ///   - urls: An array of URLs used to retrieve Wordpress items.
+    /// - Returns: An array of Wordpress items asynchronously.
+    /// - Throws: NetworkError or WordpressAPIError if there are network errors or if the URLs to not return JSON results that match the provided type.
     func fetchItems<T: WordpressItem>(
         urlSession: URLSession = .shared,
         _ type: T.Type,

@@ -1,6 +1,6 @@
 //
 //  WordpressExamples.swift
-//  Wordhord
+//  WordpressReader
 //
 //  Created by Ryan Lintott on 2020-09-15.
 //
@@ -12,15 +12,19 @@ public extension RenderedContent {
 }
 
 public extension WordpressPost {
-    static let example = WordpressPost(id: 100, date_gmt: Date(), modified_gmt: Date(), slug: "Example", link: "https://example.com", title: .example, content: .example, excerpt: .example, categories: [], tags: [])
+    static let example = WordpressPost(id: 100, link: "https://example.com", slug: "Example", date_gmt: Date(), modified_gmt: Date(),  title: .example, content: .example, excerpt: .example, categories: [], tags: [])
 }
 
 public extension WordpressPage {
-    static let example = WordpressPage(id: 100, date_gmt: Date(), modified_gmt: Date(), slug: "ExampleWord", link: "https://example.com", title: .example, content: .example, excerpt: .example)
+    static let example = WordpressPage(id: 100, link: "https://example.com", slug: "ExampleWord", date_gmt: Date(), modified_gmt: Date(), title: .example, content: .example, excerpt: .example)
 }
 
 public extension WordpressCategory {
-    static let example = WordpressCategory(id: 1, count: 1, description: "Category description", link: "https://example.com", name: "example category", slug: "example-category")
+    static let example = WordpressCategory(id: 1, link: "https://example.com", slug: "example-category", count: 1, name: "example category", description: "Category description")
+}
+
+public extension WordpressTag {
+    static let example = WordpressTag(id: 1, link: "https://example.com", slug: "example-tag", count: 1, name: "example tag", description: "Tag description")
 }
 
 public extension WordpressIcon {

@@ -1,17 +1,17 @@
 //
-//  WordpressCategory.swift
+//  WordpressTag.swift
 //  WordpressReader
 //
-//  Created by Ryan Lintott on 2021-05-18.
+//  Created by Ryan Lintott on 2022-04-29.
 //
 
 import Foundation
 
-/// A Wordpress Category
+/// A Wordpress Tag
 ///
 /// This type has a subset of parameters that match the names of those in the Wordpress REST API
-/// https://developer.wordpress.org/rest-api/reference/categories/
-public struct WordpressCategory: WordpressTaxonomy {
+/// https://developer.wordpress.org/rest-api/reference/tags/
+public struct WordpressTag: WordpressTaxonomy {
     public static let labelMaker = Self(id: 0, link: "", slug: "", count: 0, name: "", description: "")
     
     public var id: Int
@@ -21,5 +21,5 @@ public struct WordpressCategory: WordpressTaxonomy {
     public var name: String
     public var description: String
     
-    public static let urlComponent = "categories"
+    public static let urlComponent = "tags"
 }
