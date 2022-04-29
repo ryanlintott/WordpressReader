@@ -1,3 +1,3 @@
 # WordpressReader
 
-A description of this package.
+A simple asynchronous way to download and decode public Wordpress content.
