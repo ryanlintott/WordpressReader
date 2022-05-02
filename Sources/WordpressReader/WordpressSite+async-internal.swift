@@ -15,7 +15,7 @@ extension WordpressSite {
     func fetchPaginatedUrls<T: WordpressItem>(_ request: WordpressRequest<T>) async throws -> [URL] {
         let baseUrl = restAPIv2Url.appendingPathComponent(T.self.urlComponent)
         guard var urlComponents = URLComponents(url: baseUrl, resolvingAgainstBaseURL: true) else {
-            throw NetworkError.badURL
+            throw WordpressReaderError.badURL
         }
         
         let pageRange: ClosedRange<Int>?
@@ -26,13 +26,13 @@ extension WordpressSite {
             urlComponents.queryItems = request.urlQueryItems
             
             guard let url = urlComponents.url else {
-                throw NetworkError.badURLComponents
+                throw WordpressReaderError.badURLComponents
             }
             
             let header = try await request.urlSession.fetchHeader(url: url, forHTTPHeaderField: Self.totalPagesHeader)
             
             guard let totalPages = Int(header) else {
-                throw WordpressError.apiError(details: "Total pages in header not a valid Integer")
+                throw WordpressReaderError.apiError(details: "Total pages in header not a valid Integer")
             }
             
             pageRange = request.pageRange(total: totalPages)
@@ -44,7 +44,7 @@ extension WordpressSite {
             pageUrlComponents.queryItems = request.urlQueryItems(page)
 
             guard let url = pageUrlComponents.url else {
-                throw NetworkError.badURL
+                throw WordpressReaderError.badURL
             }
             return url
         } ?? []

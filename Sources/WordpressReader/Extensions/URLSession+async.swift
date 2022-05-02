@@ -22,7 +22,7 @@ internal extension URLSession {
                 } else if let data = data, let response = response {
                     continuation.resume(returning: (data, response))
                 } else {
-                    continuation.resume(throwing: NetworkError.unknown)
+                    continuation.resume(throwing: WordpressReaderError.unknown())
                 }
             }.resume()
         }
@@ -42,7 +42,7 @@ internal extension URLSession {
         
         guard let response = response as? HTTPURLResponse,
               response.statusCode == 200 else {
-            throw NetworkError.requestFailed
+            throw WordpressReaderError.requestFailed
         }
         
         let decoder = JSONDecoder()
@@ -62,7 +62,7 @@ internal extension URLSession {
         (_, response) = try await self.data(from: url)
         
         guard let httpResponse = response as? HTTPURLResponse else {
-            throw NetworkError.nonHttpURL
+            throw WordpressReaderError.nonHttpURL
         }
 
         return httpResponse
@@ -78,7 +78,7 @@ internal extension URLSession {
         let httpResponse = try await fetchHTTPURLResponse(url: url)
         
         guard let value = httpResponse.value(forHTTPHeaderField: header) else {
-            throw NetworkError.badHeaderName
+            throw WordpressReaderError.badHeaderName
         }
         
         return value

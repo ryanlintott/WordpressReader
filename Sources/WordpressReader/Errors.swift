@@ -7,8 +7,8 @@
 
 import Foundation
 
-/// A network error.
-public enum NetworkError: LocalizedError {
+/// A Wordpress Rest API error
+public enum WordpressReaderError: LocalizedError {
     /// An invalid URL.
     case badURL
     /// An invalid HTTP URL.
@@ -19,11 +19,12 @@ public enum NetworkError: LocalizedError {
     case badURLComponents
     /// The network request faild.
     case requestFailed
-    /// Unknown network error with supplied description.
-    case unknown(description: String = "An unknown network error occurred.")
-    
-    /// Unknown network error without a reason.
-    static let unknown: Self = .unknown()
+    /// Error with Wordpress API
+    case apiError(details: String)
+    /// Bad argument supplied to Wordpress API
+    case badArgument
+    /// Unknown error with supplied description.
+    case unknown(description: String = "An unknown Wordpress error occurred.")
     
     public var errorDescription: String? {
         switch self {
@@ -37,23 +38,12 @@ public enum NetworkError: LocalizedError {
             return NSLocalizedString("The URL components are invalid", comment: "")
         case .requestFailed:
             return NSLocalizedString("The request failed", comment: "")
-        case .unknown(let description):
-            return NSLocalizedString(description, comment: "")
-        }
-    }
-}
-
-/// A Wordpress Rest API error
-public enum WordpressError: LocalizedError {
-    case apiError(details: String)
-    case badArgument
-    
-    public var errorDescription: String? {
-        switch self {
         case .apiError(let details):
             return NSLocalizedString("Wordpress API error: \(details)", comment: "")
         case .badArgument:
             return NSLocalizedString("Wordpress Error: bad argument", comment: "")
+        case .unknown(let description):
+            return NSLocalizedString(description, comment: "")
         }
     }
 }
