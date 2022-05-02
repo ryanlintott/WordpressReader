@@ -10,7 +10,7 @@ import Foundation
 /// A Wordpress item that is identifiable with a link and a slug.
 ///
 /// Used by WordpressContent and WordpressCategory
-public protocol WordpressItem: Codable, Identifiable, Hashable, Comparable, ParameterLabels {
+public protocol WordpressItem: Codable, Identifiable, Hashable, Comparable, CustomDebugStringConvertible, ParameterLabels {
     /// Unique Wordpress identifier for the object.
     var id: Int { get }
     /// URL to the object.
@@ -33,5 +33,9 @@ public extension WordpressItem {
     /// Slug removing any percent encoding.
     var slugCleaned: String {
         slug.removingPercentEncoding ?? slug
+    }
+
+    var debugDescription: String {
+        "slug: \(slug), id: \(id), link: \(link)"
     }
 }
