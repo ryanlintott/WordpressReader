@@ -11,7 +11,7 @@ extension WordpressSite {
     /// Returns Wordpress settings for this site.
     /// - Parameter urlSession: URL session to use for this request.
     /// - Returns: Wordpress settings.
-    /// - Throws: NetworkError if there is a bad response or DecodingError if the type cannot be decoded.
+    /// - Throws: WordpressReaderError if there is a bad response or DecodingError if the type cannot be decoded.
     public func fetchSettings(urlSession: URLSession = .shared) async throws -> WordpressSettings {
         try await urlSession.fetchJsonData(
             WordpressSettings.self,
@@ -26,7 +26,7 @@ extension WordpressSite {
     ///   - type: Type of Wordpress Item.
     ///   - id: Unique identifier for Wordpress Item.
     /// - Returns: A Wordpress item matching a supplied unique identifier.
-    /// - Throws: NetworkError if there is a bad response or DecodingError if the type cannot be decoded.
+    /// - Throws: WordpressReaderError if there is a bad response or DecodingError if the type cannot be decoded.
     public func fetchById<T: WordpressItem>(
         urlSession: URLSession = .shared,
         _ type: T.Type,
@@ -41,10 +41,10 @@ extension WordpressSite {
     
     /// Asynchronously returns an asynchronous throwing stream of arrays of Wordpress items.
     ///
-    /// The throwing asynchronous stream returns batches that correspond to pages from the Wordpress API and will finish when all batches have completed. They may throw a NetworkError if there are URL errors, badly formatted query items, or a bad response or a DecodingError if the JSON doesn't match the Wordpress item.
+    /// The throwing asynchronous stream returns batches that correspond to pages from the Wordpress API and will finish when all batches have completed. They may throw a WordpressReaderError if there are URL errors, badly formatted query items, or a bad response or a DecodingError if the JSON doesn't match the Wordpress item.
     /// - Parameter request: Wordpress request used to retrieve Wordpress items.
     /// - Returns: An asynchronous throwing stream of arrays of Wordpress items.
-    /// - Throws: NetworkError, WordpressError, or DecodingError.
+    /// - Throws: WordpressReaderError, or DecodingError.
     public func stream<T: WordpressItem>(
         _ request: WordpressRequest<T>
     ) async throws -> AsyncThrowingStream<[T], Error> {
@@ -57,7 +57,7 @@ extension WordpressSite {
     /// Use itemStream() if you want to retrieve item batches in an asynchronous stream.
     /// - Parameter request: Wordpress request used to retrieve Wordpress items.
     /// - Returns: An array of Wordpress items asynchronously.
-    /// - Throws: NetworkError, WordpressError, or DecodingError.
+    /// - Throws: WordpressReaderError, or DecodingError.
     public func fetch<T: WordpressItem>(
         _ request: WordpressRequest<T>
     ) async throws -> [T] {
@@ -70,7 +70,7 @@ extension WordpressSite {
     /// Use itemStream() if you want to retrieve item batches in an asynchronous stream.
     /// - Parameter type: The type of Wordpress item to retrieve using a default request.
     /// - Returns: An array of Wordpress items asynchronously.
-    /// - Throws: NetworkError, WordpressError, or DecodingError.
+    /// - Throws: WordpressReaderError, or DecodingError.
     public func fetch<T: WordpressItem>(
         _ type: T.Type
     ) async throws -> [T] {

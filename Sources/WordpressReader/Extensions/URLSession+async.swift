@@ -12,7 +12,7 @@ internal extension URLSession {
     /// Retrieves the contents of a URL and delivers the data asynchronously.
     /// - Parameter url: The URL to retrieve
     /// - Returns: An asynchronously-delivered tuple that contains the URL contents as a Data instance, and a URLResponse.
-    /// - Throws: NetworkError if there is a bad response.
+    /// - Throws: WordpressReaderError if there is a bad response.
     func data(from url: URL) async throws -> (Data, URLResponse) {
         try Task.checkCancellation()
         return try await withCheckedThrowingContinuation { continuation in
@@ -35,7 +35,7 @@ internal extension URLSession {
     ///   - dateDecodingStrategy: Date strategy for the JSON decoder. Default is .deferredToDate.
     ///   - keyDecodingStrategy: Key strategy for the JSON decoder. Default is .useDefaultKeys.
     /// - Returns: An asynchronously-delivered type decoded from the Data contents of the URL.
-    /// - Throws: NetworkError if there is a bad response or DecodingError if the type cannot be decoded.
+    /// - Throws: WordpressReaderError if there is a bad response or DecodingError if the type cannot be decoded.
     func fetchJsonData<T: Decodable>(_ type: T.Type, url: URL, dateDecodingStrategy: JSONDecoder.DateDecodingStrategy = .deferredToDate, keyDecodingStrategy: JSONDecoder.KeyDecodingStrategy = .useDefaultKeys) async throws -> T {
         
         let (data, response) = try await data(from: url)
@@ -55,7 +55,7 @@ internal extension URLSession {
     /// Retrieves the HTTP URL respose from a URL asynchronously.
     /// - Parameter url: URL to retrieve.
     /// - Returns: An asynchronously-delivered HTTP URL respose.
-    /// - Throws: NetworkError if there is a bad response or a non-HTTP URL
+    /// - Throws: WordpressReaderError if there is a bad response or a non-HTTP URL
     func fetchHTTPURLResponse(url: URL) async throws -> HTTPURLResponse {
         let response: URLResponse
         
@@ -73,7 +73,7 @@ internal extension URLSession {
     ///   - url: URL to retrieve.
     ///   - header: header to retrieve.
     /// - Returns: An asynchronously-delivered value of the supplied header from the URL.
-    /// - Throws: NetworkError if there's a bad response, non-HTTP URL or a bad header name.
+    /// - Throws: WordpressReaderError if there's a bad response, non-HTTP URL or a bad header name.
     func fetchHeader(url: URL, forHTTPHeaderField header: String) async throws -> String {
         let httpResponse = try await fetchHTTPURLResponse(url: url)
         
@@ -87,7 +87,7 @@ internal extension URLSession {
     /// Retrieves all headers from a URL asynchronously.
     /// - Parameter url: URL to retrieve.
     /// - Returns: An asynchronously-delivered dictionary of all header-value pairs from the URL.
-    /// - Throws: NetworkError if there is a bad response or a non-HTTP URL
+    /// - Throws: WordpressReaderError if there is a bad response or a non-HTTP URL
     func fetchAllHeaders(url: URL) async throws -> [AnyHashable: Any] {
         let httpResponse = try await fetchHTTPURLResponse(url: url)
         
