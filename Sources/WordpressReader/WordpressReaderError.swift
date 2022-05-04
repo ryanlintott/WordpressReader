@@ -7,7 +7,7 @@
 
 import Foundation
 
-/// A Wordpress Rest API error
+/// An enum that includes all WordpressReader error types
 public enum WordpressReaderError: LocalizedError {
     /// A URL error
     public enum URLError: LocalizedError {
