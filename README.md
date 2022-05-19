@@ -39,7 +39,7 @@ Create an instance of WordpressSite for any Wordpress.com website:
 let site = WordpressSite(domain: "oldenglishwordhord.com", name: "Old English Wordhord")
 ```
 
-Fetch posts, pages, categories or tags asynchronously:
+Fetch posts, pages, categories, or tags asynchronously:
 
 ```swift
 let posts: [WordpressPost] = try await site.fetch(.posts())
@@ -67,7 +67,7 @@ self.posts = try await site.fetch(recentPosts)
 self.posts += try await site.fetch(remainingPosts)
 ```
 
-The default .fetch() will get pages in parallel but only return when they're all done. If you want each batch in order as soon their ready, use an async stream:
+The default .fetch() will get pages in parallel but only return when they're all done. If you want each batch in order as soon as they're ready, use an async stream:
 
 ```swift
 for try await batch in try await site.stream(request) {

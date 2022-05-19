@@ -8,11 +8,13 @@
 import Foundation
 
 internal extension URLSession {
+    typealias ProjectError = WordpressReaderError
+    
     @available(iOS, deprecated: 15.0, message: "This extension is no longer necessary as it's built into the API")
     /// Retrieves the contents of a URL and delivers the data asynchronously.
     /// - Parameter url: The URL to retrieve
     /// - Returns: An asynchronously-delivered tuple that contains the URL contents as a Data instance, and a URLResponse.
-    /// - Throws: WordpressReaderError if there is a bad response.
+    /// - Throws: Error if there is a bad response.
     func data(from url: URL) async throws -> (Data, URLResponse) {
         try Task.checkCancellation()
         return try await withCheckedThrowingContinuation { continuation in
@@ -22,7 +24,7 @@ internal extension URLSession {
                 } else if let data = data, let response = response {
                     continuation.resume(returning: (data, response))
                 } else {
-                    continuation.resume(throwing: WordpressReaderError.unknown())
+                    continuation.resume(throwing: ProjectError.unknown())
                 }
             }.resume()
         }
@@ -32,24 +34,32 @@ internal extension URLSession {
     /// - Parameters:
     ///   - type: Type to decode from the data.
     ///   - url: URL to retrieve.
-    ///   - dateDecodingStrategy: Date strategy for the JSON decoder. Default is .deferredToDate.
     ///   - keyDecodingStrategy: Key strategy for the JSON decoder. Default is .useDefaultKeys.
+    ///   - dataDecodingStrategy: Data strategy for the JSON decoder. Default is .deferredToData.
+    ///   - dateDecodingStrategy: Date strategy for the JSON decoder. Default is .deferredToDate.
     /// - Returns: An asynchronously-delivered type decoded from the Data contents of the URL.
-    /// - Throws: WordpressReaderError if there is a bad response or DecodingError if the type cannot be decoded.
-    func fetchJsonData<T: Decodable>(_ type: T.Type, url: URL, dateDecodingStrategy: JSONDecoder.DateDecodingStrategy = .deferredToDate, keyDecodingStrategy: JSONDecoder.KeyDecodingStrategy = .useDefaultKeys) async throws -> T {
+    /// - Throws: Error if there is a bad response or DecodingError if the type cannot be decoded.
+    func fetchJsonData<T: Decodable>(
+        _ type: T.Type,
+        url: URL,
+        keyDecodingStrategy: JSONDecoder.KeyDecodingStrategy = .useDefaultKeys,
+        dataDecodingStrategy: JSONDecoder.DataDecodingStrategy = .deferredToData,
+        dateDecodingStrategy: JSONDecoder.DateDecodingStrategy = .deferredToDate
+    ) async throws -> T {
         
         let (data, response) = try await data(from: url)
         
         guard let response = response as? HTTPURLResponse else {
-            throw WordpressReaderError.Network.notHTTPURLResponse
+            throw ProjectError.Network.notHTTPURLResponse
         }
         guard response.statusCode == 200 else {
-            throw WordpressReaderError.Network.requestFailed(statusCode: response.statusCode)
+            throw ProjectError.Network.requestFailed(statusCode: response.statusCode)
         }
         
         let decoder = JSONDecoder()
-        decoder.dateDecodingStrategy = dateDecodingStrategy
         decoder.keyDecodingStrategy = keyDecodingStrategy
+        decoder.dataDecodingStrategy = dataDecodingStrategy
+        decoder.dateDecodingStrategy = dateDecodingStrategy
         
         return try decoder.decode(T.self, from: data)
     }
@@ -57,14 +67,14 @@ internal extension URLSession {
     /// Retrieves the HTTP URL respose from a URL asynchronously.
     /// - Parameter url: URL to retrieve.
     /// - Returns: An asynchronously-delivered HTTP URL respose.
-    /// - Throws: WordpressReaderError if there is a bad response or a non-HTTP URL
+    /// - Throws: Error if there is a bad response or a non-HTTP URL
     func fetchHTTPURLResponse(url: URL) async throws -> HTTPURLResponse {
         let response: URLResponse
         
         (_, response) = try await self.data(from: url)
         
         guard let httpResponse = response as? HTTPURLResponse else {
-            throw WordpressReaderError.Network.notHTTPURLResponse
+            throw ProjectError.Network.notHTTPURLResponse
         }
 
         return httpResponse
@@ -80,7 +90,7 @@ internal extension URLSession {
         let httpResponse = try await fetchHTTPURLResponse(url: url)
         
         guard let value = httpResponse.value(forHTTPHeaderField: header) else {
-            throw WordpressReaderError.Network.badHeaderName(headerName: header)
+            throw ProjectError.Network.badHeaderName(headerName: header)
         }
         
         return value
