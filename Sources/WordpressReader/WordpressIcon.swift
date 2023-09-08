@@ -15,4 +15,10 @@ public struct WordpressIcon: Codable, Hashable, Equatable, ParameterLabels {
     public var img: String
     /// Appears to be a duplicate of the img property?
     public var ico: String
+    
+    /// Create a post using properties. Useful for generating sample content.
+    public init(img: String, ico: String) {
+        self.img = img
+        self.ico = ico
+    }
 }

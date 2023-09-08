@@ -21,5 +21,22 @@ public struct WordpressTag: WordpressTaxonomy {
     public var name: String
     public var description: String
     
+    /// Create a tag using properties. Useful for generating sample content.
+    public init(
+        id: Int,
+        link: String,
+        slug: String,
+        count: Int,
+        name: String,
+        description: String
+    ) {
+        self.id = id
+        self.link = link
+        self.slug = slug
+        self.count = count
+        self.name = name
+        self.description = description
+    }
+    
     public static let urlComponent = "tags"
 }

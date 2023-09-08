@@ -10,7 +10,9 @@ import Foundation
 internal extension URLSession {
     typealias ProjectError = WordpressReaderError
     
-    @available(iOS, deprecated: 15.0, message: "This extension is no longer necessary as it's built into the API")
+    @available(iOS, obsoleted: 15.0, message: "This extension is no longer necessary as it's built into URLSession")
+    @available(macOS, obsoleted: 12.0, message: "This extension is no longer necessary as it's built into URLSession")
+    @available(visionOS, obsoleted: 1.0, message: "This extension is no longer necessary as it's built into URLSession")
     /// Retrieves the contents of a URL and delivers the data asynchronously.
     /// - Parameter url: The URL to retrieve
     /// - Returns: An asynchronously-delivered tuple that contains the URL contents as a Data instance, and a URLResponse.

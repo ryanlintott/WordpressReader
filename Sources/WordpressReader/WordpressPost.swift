@@ -30,5 +30,30 @@ public struct WordpressPost: WordpressContent {
     /// An array of unique identifiers for WordpressTag objects
     public var tags: [Int]
     
+    /// Create a post using properties. Useful for generating sample content.
+    public init(
+        id: Int,
+        link: String,
+        slug: String,
+        date_gmt: Date,
+        modified_gmt: Date,
+        title: RenderedContent,
+        content: RenderedContent,
+        excerpt: RenderedContent,
+        categories: [Int],
+        tags: [Int]
+    ) {
+        self.id = id
+        self.link = link
+        self.slug = slug
+        self.date_gmt = date_gmt
+        self.modified_gmt = modified_gmt
+        self.title = title
+        self.content = content
+        self.excerpt = excerpt
+        self.categories = categories
+        self.tags = tags
+    }
+    
     public static let urlComponent = "posts"
 }

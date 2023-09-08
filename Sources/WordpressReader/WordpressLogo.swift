@@ -16,4 +16,10 @@ public struct WordpressLogo: Codable, Identifiable, Hashable, Equatable, Paramet
     
     /// URL to access the logo image.
     public var url: String
+    
+    /// Create a logo using properties. Useful for generating sample content.
+    public init(id: Int, url: String) {
+        self.id = id
+        self.url = url
+    }
 }

@@ -13,6 +13,12 @@ public struct RenderedContent: Codable, Hashable, Equatable, ParameterLabels {
     
     /// String containing HTML code representing the rendered content on Wordpress.
     public var rendered: String
+    
+    /// Create rendered content from a string. Useful for generating sample content.
+    /// - Parameter rendered: String containing HTML code representing the rendered content on Wordpress.
+    public init(rendered: String) {
+        self.rendered = rendered
+    }
 }
 
 extension RenderedContent {
