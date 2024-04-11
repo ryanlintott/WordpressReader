@@ -8,7 +8,7 @@
 import Foundation
 
 /// A Wordpress Logo.
-public struct WordpressLogo: Codable, Identifiable, Hashable, Equatable, ParameterLabels {
+public struct WordpressLogo: Codable, Identifiable, Hashable, Equatable, Sendable, ParameterLabels {
     public static let labelMaker = Self(id: 0, url: "")
     
     /// Unique identifier for the logo

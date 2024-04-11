@@ -8,7 +8,7 @@
 import Foundation
 
 /// Wordpress Icon based on v1 Rest API
-public struct WordpressIcon: Codable, Hashable, Equatable, ParameterLabels {
+public struct WordpressIcon: Codable, Hashable, Equatable, Sendable, ParameterLabels {
     public static let labelMaker = Self(img: "", ico: "")
     
     /// Image URL for icon

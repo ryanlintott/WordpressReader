@@ -8,7 +8,7 @@
 import SwiftUI
 
 /// Enumeration of sorting attributes for Wordpress objects.
-public enum WordpressOrderBy: String, Hashable, Equatable, CaseIterable {
+public enum WordpressOrderBy: String, Hashable, Equatable, CaseIterable, Sendable {
     /// Order by date posted. (default option)
     case date
     /// Order by id.
@@ -22,7 +22,7 @@ public enum WordpressOrderBy: String, Hashable, Equatable, CaseIterable {
 }
 
 /// Enumeration of sorting orders for Wordpress objects
-public enum WordpressOrder: String, Hashable, Equatable, CaseIterable {
+public enum WordpressOrder: String, Hashable, Equatable, CaseIterable, Sendable {
     /// Ascending order.
     ///
     /// (Z - A) for string. (oldest - newest) for dates.
@@ -35,7 +35,7 @@ public enum WordpressOrder: String, Hashable, Equatable, CaseIterable {
 }
 
 /// A Wordpress query item.
-public enum WordpressQueryItem: Hashable, Comparable, Equatable {
+public enum WordpressQueryItem: Hashable, Comparable, Equatable, Sendable {
     /// An array of fields to return with this query. (An empty array will return all fields)
     ///
     /// When used in a WordpressRequest this parameter is automatically populated using parameter labels of the WordpressItem you're requesting. This shrinks the size of the returned JSON by discarding parameters that cannot be decoded.

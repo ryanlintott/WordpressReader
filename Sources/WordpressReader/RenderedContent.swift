@@ -8,7 +8,7 @@
 import Foundation
 
 /// Rendered HTML content from the Wordpress API
-public struct RenderedContent: Codable, Hashable, Equatable, ParameterLabels {
+public struct RenderedContent: Codable, Hashable, Equatable, Sendable, ParameterLabels {
     public static let labelMaker = Self(rendered: "")
     
     /// String containing HTML code representing the rendered content on Wordpress.

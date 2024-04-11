@@ -10,7 +10,7 @@ import Foundation
 /// A Wordpress Settings object
 ///
 /// This type has a subset of parameters that match the names of those in the (deprecated) Wordpress Rest API V1
-public struct WordpressSettings: Codable, Identifiable, Hashable, Equatable, ParameterLabels {
+public struct WordpressSettings: Codable, Identifiable, Hashable, Equatable, Sendable, ParameterLabels {
     public static let labelMaker = Self(ID: 0, name: "", description: "", URL: "", icon: .labelMaker, logo: .labelMaker)
     
     /// Unique identifier for the settings

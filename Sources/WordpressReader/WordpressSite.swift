@@ -10,7 +10,7 @@ import Foundation
 /// A type that allows API access to a provided site on Wordpress.com
 ///
 /// Does not yet work for sites hosted outside Wordpress.com.
-public struct WordpressSite: Codable, Hashable {
+public struct WordpressSite: Codable, Hashable, Sendable {
     /// Site domain excluding http or other prefix.
     ///
     /// Example: `"example.com"`

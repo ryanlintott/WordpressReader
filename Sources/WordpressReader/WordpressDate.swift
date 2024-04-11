@@ -8,7 +8,7 @@
 import Foundation
 
 /// An empty enum for storing Wordpress date formatters
-enum WordpressDate {
+enum WordpressDate: Sendable {
     /// Date formatter for Wordpress style dates
     ///
     /// Details: https://core.trac.wordpress.org/ticket/41032

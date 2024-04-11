@@ -8,7 +8,7 @@
 import Foundation
 
 /// A Wordpress API request for a specified WordpressItem
-public struct WordpressRequest<T: WordpressItem>: Hashable, Equatable {
+public struct WordpressRequest<T: WordpressItem>: Hashable, Equatable, Sendable {
     /// URL session to use for the request (default is .shared)
     public var urlSession: URLSession = .shared
     /// Start page to use when returning paginated content. (default is 1)
