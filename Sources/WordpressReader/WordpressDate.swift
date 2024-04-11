@@ -49,14 +49,10 @@ enum WordpressDate: Sendable {
 
 extension JSONDecoder.DateDecodingStrategy {
     /// Wordpress style date decoder.
-    static var wordpressDate: JSONDecoder.DateDecodingStrategy {
-        .custom(WordpressDate.dateDecodingStrategy)
-    }
+    static let wordpressDate: JSONDecoder.DateDecodingStrategy = .custom(WordpressDate.dateDecodingStrategy)
 }
 
 extension JSONEncoder.DateEncodingStrategy {
     /// Wordpress style date encoder.
-    static var wordpressDate: JSONEncoder.DateEncodingStrategy {
-        .custom(WordpressDate.dateEncodingStrategy)
-    }
+    static let wordpressDate: JSONEncoder.DateEncodingStrategy = .custom(WordpressDate.dateEncodingStrategy)
 }
