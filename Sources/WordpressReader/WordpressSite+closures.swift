@@ -9,7 +9,7 @@ import Foundation
 
 extension WordpressSite {
     @available(*, renamed: "fetchSettings(urlSession:)")
-    public func fetchSettings(completion: @escaping (Result<WordpressSettings, Error>) -> Void) {
+    public func fetchSettings(completion: @Sendable @escaping (Result<WordpressSettings, Error>) -> Void) {
         Task {
             do {
                 let result = try await fetchSettings()
@@ -21,7 +21,7 @@ extension WordpressSite {
     }
     
     @available(*, renamed: "fetchById(urlSession:_:id:)")
-    public func fetchById<T: WordpressItem>(_ type: T.Type, id: Int, completion: @escaping (Result<T, Error>) -> Void) {
+    public func fetchById<T: WordpressItem>(_ type: T.Type, id: Int, completion: @Sendable @escaping (Result<T, Error>) -> Void) {
         Task {
             do {
                 let result = try await fetchById(type, id: id)
@@ -44,7 +44,7 @@ extension WordpressSite {
         startPage: Int = 1,
         perPage: Int? = nil,
         maxNumPages: Int? = nil,
-        batchCompletion: @escaping (Result<[T], Error>) -> Void,
+        batchCompletion: @Sendable @escaping (Result<[T], Error>) -> Void,
         completion: (() -> Void)? = nil
     ) {
         Task {
@@ -87,7 +87,7 @@ extension WordpressSite {
     }
     
     @available(*, renamed: "itemStream(_:)")
-    public func fetchItems<T: WordpressItem>(_ type: T.Type, batchCompletion: @escaping (Result<[T], Error>) -> Void, completion: (() -> Void)? = nil) {
+    public func fetchItems<T: WordpressItem>(_ type: T.Type, batchCompletion: @Sendable @escaping (Result<[T], Error>) -> Void, completion: (() -> Void)? = nil) {
         Task {
             let request = WordpressRequest<T>()
             do {
@@ -103,7 +103,7 @@ extension WordpressSite {
     }
     
     @available(*, renamed: "fetchItems(_:)")
-    public func fetchAllItems<T: WordpressItem>(_ type: T.Type, completion: @escaping (Result<[T], Error>) -> Void) {
+    public func fetchAllItems<T: WordpressItem>(_ type: T.Type, completion: @Sendable @escaping (Result<[T], Error>) -> Void) {
         Task {
             do {
                 let result = try await fetch(type)
