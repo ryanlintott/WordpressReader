@@ -62,23 +62,27 @@ extension WordpressSite {
         urlSession: URLSession = .shared,
         _ type: T.Type,
         urls: [URL]
-    ) async -> AsyncThrowingStream<[T], Error> {
+    ) -> AsyncThrowingStream<[T], Error> {
         AsyncThrowingStream { continuation in
-            Task {
+            let task = Task {
                 try await withThrowingTaskGroup(of: [T].self) { group in
                     for url in urls {
                         group.addTask {
                             try Task.checkCancellation()
-                            let batch = try await urlSession.fetchJsonData([T].self, url: url, dateDecodingStrategy: .wordpressDate)
-                            return batch
+                            return try await urlSession.fetchJsonData([T].self, url: url, dateDecodingStrategy: .wordpressDate)
                         }
                     }
                     
                     for try await batch in group {
                         continuation.yield(batch)
                     }
+                    
                     continuation.finish()
                 }
+            }
+            
+            continuation.onTermination = { _ in
+                task.cancel()
             }
         }
     }
@@ -95,6 +99,6 @@ extension WordpressSite {
         _ type: T.Type,
         urls: [URL]
     ) async throws -> [T] {
-        try await itemStream(urlSession: urlSession, type, urls: urls).reduce(into: [], { $0 += $1 })
+        try await itemStream(urlSession: urlSession, type, urls: urls).reduce(into: [], +=)
     }
 }

@@ -10,28 +10,6 @@ import Foundation
 internal extension URLSession {
     typealias ProjectError = WordpressReaderError
     
-    @available(iOS, obsoleted: 15.0, message: "This extension is no longer necessary as it's built into URLSession")
-    @available(macOS, obsoleted: 12.0, message: "This extension is no longer necessary as it's built into URLSession")
-    @available(visionOS, obsoleted: 1.0, message: "This extension is no longer necessary as it's built into URLSession")
-    /// Retrieves the contents of a URL and delivers the data asynchronously.
-    /// - Parameter url: The URL to retrieve
-    /// - Returns: An asynchronously-delivered tuple that contains the URL contents as a Data instance, and a URLResponse.
-    /// - Throws: Error if there is a bad response.
-    func data(from url: URL) async throws -> (Data, URLResponse) {
-        try Task.checkCancellation()
-        return try await withCheckedThrowingContinuation { continuation in
-            dataTask(with: url) { data, response, error in
-                if let error = error {
-                    continuation.resume(throwing: error)
-                } else if let data = data, let response = response {
-                    continuation.resume(returning: (data, response))
-                } else {
-                    continuation.resume(throwing: ProjectError.unknown())
-                }
-            }.resume()
-        }
-    }
-    
     /// Retrieves the contents of a URL and delivers the data decoded as a specified type asynchronously.
     /// - Parameters:
     ///   - type: Type to decode from the data.
@@ -48,7 +26,6 @@ internal extension URLSession {
         dataDecodingStrategy: JSONDecoder.DataDecodingStrategy = .deferredToData,
         dateDecodingStrategy: JSONDecoder.DateDecodingStrategy = .deferredToDate
     ) async throws -> T {
-        
         let (data, response) = try await data(from: url)
         
         guard let response = response as? HTTPURLResponse else {

@@ -32,7 +32,25 @@ extension WordpressSite {
         }
     }
     
-    @available(*, renamed: "itemStream(_:)")
+    @available(*, renamed: "stream(_:)")
+    public func fetch<T: WordpressContent>(
+        _ request: WordpressRequest<T>,
+        batchCompletion: @Sendable @escaping (Result<[T], Error>) -> Void,
+        completion: (@Sendable () -> Void)? = nil
+    ) {
+        Task {
+            do {
+                for try await batch in try await stream(request) {
+                    batchCompletion(.success(batch))
+                }
+            } catch let error {
+                batchCompletion(.failure(error))
+            }
+            completion?()
+        }
+    }
+    
+    @available(*, renamed: "stream(_:)")
     public func fetchContent<T: WordpressContent>(
         _ type: T.Type,
         postedAfter: Date? = nil,
@@ -45,29 +63,29 @@ extension WordpressSite {
         perPage: Int? = nil,
         maxNumPages: Int? = nil,
         batchCompletion: @Sendable @escaping (Result<[T], Error>) -> Void,
-        completion: (() -> Void)? = nil
+        completion: (@Sendable () -> Void)? = nil
     ) {
         Task {
             var queryItems: Set<WordpressQueryItem> = []
-            if let postedAfter = postedAfter {
+            if let postedAfter {
                 queryItems.update(with: .postedAfter(postedAfter))
             }
-            if let postedBefore = postedBefore {
+            if let postedBefore {
                 queryItems.update(with: .postedBefore(postedBefore))
             }
-            if let modifiedAfter = modifiedAfter {
+            if let modifiedAfter {
                 queryItems.update(with: .modifiedAfter(modifiedAfter))
             }
-            if let modifiedBefore = modifiedBefore {
+            if let modifiedBefore {
                 queryItems.update(with: .modifiedBefore(modifiedBefore))
             }
-            if let orderBy = orderBy {
+            if let orderBy {
                 queryItems.update(with: .orderBy(orderBy))
             }
-            if let order = order {
+            if let order {
                 queryItems.update(with: .order(order))
             }
-            if let perPage = perPage {
+            if let perPage {
                 queryItems.update(with: .perPage(perPage))
             }
             var request = WordpressRequest<T>(queryItems: queryItems)
@@ -87,7 +105,11 @@ extension WordpressSite {
     }
     
     @available(*, renamed: "itemStream(_:)")
-    public func fetchItems<T: WordpressItem>(_ type: T.Type, batchCompletion: @Sendable @escaping (Result<[T], Error>) -> Void, completion: (() -> Void)? = nil) {
+    public func fetchItems<T: WordpressItem>(
+        _ type: T.Type,
+        batchCompletion: @Sendable @escaping (Result<[T], Error>) -> Void,
+        completion: (@Sendable () -> Void)? = nil
+    ) {
         Task {
             let request = WordpressRequest<T>()
             do {
@@ -103,7 +125,10 @@ extension WordpressSite {
     }
     
     @available(*, renamed: "fetchItems(_:)")
-    public func fetchAllItems<T: WordpressItem>(_ type: T.Type, completion: @Sendable @escaping (Result<[T], Error>) -> Void) {
+    public func fetchAllItems<T: WordpressItem>(
+        _ type: T.Type,
+        completion: @Sendable @escaping (Result<[T], Error>) -> Void
+    ) {
         Task {
             do {
                 let result = try await fetch(type)

@@ -8,7 +8,7 @@
 import Foundation
 
 /// An empty enum for storing Wordpress date formatters
-enum WordpressDate: Sendable {
+enum WordpressDate {
     /// Date formatter for Wordpress style dates
     ///
     /// Details: https://core.trac.wordpress.org/ticket/41032
@@ -23,7 +23,7 @@ enum WordpressDate: Sendable {
     /// Strategy for decoding Wordpress style dates.
     /// - Parameter decoder: Decoder to apply strategy to.
     /// - Returns: Decoded date.
-    static func dateDecodingStrategy(_ decoder: Decoder) throws -> Date {
+    static func dateDecodingStrategy(_ decoder: any Decoder) throws -> Date {
         let container = try decoder.singleValueContainer()
         let dateAsString = try container.decode(String.self)
 

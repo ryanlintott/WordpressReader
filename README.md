@@ -11,29 +11,28 @@
 # Overview
 A simple asynchronous way to download and decode public Wordpress content.
 
-# WordpressReaderExample
-Check out the [example app](https://github.com/ryanlintott/WordpressReaderExample) to see how you can use this package in your iOS app.
+# Demo App
+Check out [WordpressReaderExample](https://github.com/ryanlintott/WordpressReaderExample) to see how you can use this package in your iOS app.
 
-# Installation
+# Installation and Usage
+This package is compatible with iOS 14+, macOS 11+, watchOS 7+, tvOS 14+, and visionOS.
+
 1. In Xcode go to `File -> Add Packages`
 2. Paste in the repo's url: `https://github.com/ryanlintott/WordpressReader` and select by version.
-
-# Usage
-Import the package using `import WordpressReader`
-
-# Platforms
-This package is compatible with iOS 14 or later.
+3. Import the package using `import WordpressReader`
 
 # Is this Production-Ready?
 Really it's up to you. I currently use this package in my own [Old English Wordhord app](https://oldenglishwordhord.com/app).
 
+Additionally, if you find a bug or want a new feature add an issue and I will get back to you about it.
+
 # Support
-If you like this package, buy me a coffee to say thanks!
+WordpressReader is open source and free but if you like using it, please consider supporting my work.
 
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/X7X04PU6T)
 
 - - -
-# Details
+# Features
 
 Create an instance of WordpressSite for any Wordpress.com website:
 

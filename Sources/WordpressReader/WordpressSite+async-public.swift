@@ -49,7 +49,7 @@ extension WordpressSite {
         _ request: WordpressRequest<T>
     ) async throws -> AsyncThrowingStream<[T], Error> {
         let urls = try await fetchPaginatedUrls(request)
-        return await itemStream(T.self, urls: urls)
+        return itemStream(urlSession: request.urlSession, T.self, urls: urls)
     }
     
     /// Asynchronously returns an array of Wordpress items.
