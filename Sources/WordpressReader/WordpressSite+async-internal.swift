@@ -65,19 +65,24 @@ extension WordpressSite {
     ) -> AsyncThrowingStream<[T], Error> {
         AsyncThrowingStream { continuation in
             let task = Task {
-                try await withThrowingTaskGroup(of: [T].self) { group in
-                    for url in urls {
-                        group.addTask {
-                            try Task.checkCancellation()
-                            return try await urlSession.fetchJsonData([T].self, url: url, dateDecodingStrategy: .wordpressDate)
+                do {
+                    try await withThrowingTaskGroup(of: [T].self) { group in
+                        for url in urls {
+                            group.addTask {
+                                try Task.checkCancellation()
+                                return try await urlSession.fetchJsonData([T].self, url: url, dateDecodingStrategy: .wordpressDate)
+                            }
                         }
-                    }
-                    
-                    for try await batch in group {
-                        continuation.yield(batch)
+                        
+                        for try await batch in group {
+                            continuation.yield(batch)
+                        }
+                        
                     }
                     
                     continuation.finish()
+                } catch {
+                    continuation.finish(throwing: error)
                 }
             }
             
