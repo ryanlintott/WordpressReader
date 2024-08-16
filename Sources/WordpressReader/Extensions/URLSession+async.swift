@@ -19,7 +19,7 @@ internal extension URLSession {
     ///   - dateDecodingStrategy: Date strategy for the JSON decoder. Default is .deferredToDate.
     /// - Returns: An asynchronously-delivered type decoded from the Data contents of the URL.
     /// - Throws: Error if there is a bad response or DecodingError if the type cannot be decoded.
-    func fetchJsonData<T: Decodable>(
+    nonisolated func fetchJsonData<T: Decodable>(
         _ type: T.Type,
         url: URL,
         keyDecodingStrategy: JSONDecoder.KeyDecodingStrategy = .useDefaultKeys,
@@ -47,7 +47,7 @@ internal extension URLSession {
     /// - Parameter url: URL to retrieve.
     /// - Returns: An asynchronously-delivered HTTP URL respose.
     /// - Throws: Error if there is a bad response or a non-HTTP URL
-    func fetchHTTPURLResponse(url: URL) async throws -> HTTPURLResponse {
+    nonisolated func fetchHTTPURLResponse(url: URL) async throws -> HTTPURLResponse {
         let response: URLResponse
         
         (_, response) = try await self.data(from: url)
@@ -65,7 +65,7 @@ internal extension URLSession {
     ///   - header: header to retrieve.
     /// - Returns: An asynchronously-delivered value of the supplied header from the URL.
     /// - Throws: WordpressReaderError if there's a bad response, non-HTTP URL or a bad header name.
-    func fetchHeader(url: URL, forHTTPHeaderField header: String) async throws -> String {
+    nonisolated func fetchHeader(url: URL, forHTTPHeaderField header: String) async throws -> String {
         let httpResponse = try await fetchHTTPURLResponse(url: url)
         
         guard let value = httpResponse.value(forHTTPHeaderField: header) else {
@@ -79,7 +79,7 @@ internal extension URLSession {
     /// - Parameter url: URL to retrieve.
     /// - Returns: An asynchronously-delivered dictionary of all header-value pairs from the URL.
     /// - Throws: WordpressReaderError if there is a bad response or a non-HTTP URL
-    func fetchAllHeaders(url: URL) async throws -> [AnyHashable: Any] {
+    nonisolated func fetchAllHeaders(url: URL) async throws -> [AnyHashable: Any] {
         let httpResponse = try await fetchHTTPURLResponse(url: url)
         
         return httpResponse.allHeaderFields

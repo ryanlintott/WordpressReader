@@ -12,7 +12,7 @@ extension WordpressSite {
     /// - Parameter urlSession: URL session to use for this request.
     /// - Returns: Wordpress settings.
     /// - Throws: WordpressReaderError if there is a bad response or DecodingError if the type cannot be decoded.
-    public func fetchSettings(urlSession: URLSession = .shared) async throws -> WordpressSettings {
+    nonisolated public func fetchSettings(urlSession: URLSession = .shared) async throws -> WordpressSettings {
         try await urlSession.fetchJsonData(
             WordpressSettings.self,
             url: settingsUrl,
@@ -27,7 +27,7 @@ extension WordpressSite {
     ///   - id: Unique identifier for Wordpress Item.
     /// - Returns: A Wordpress item matching a supplied unique identifier.
     /// - Throws: WordpressReaderError if there is a bad response or DecodingError if the type cannot be decoded.
-    public func fetchById<T: WordpressItem>(
+    nonisolated public func fetchById<T: WordpressItem>(
         urlSession: URLSession = .shared,
         _ type: T.Type,
         id: Int
@@ -45,7 +45,7 @@ extension WordpressSite {
     /// - Parameter request: Wordpress request used to retrieve Wordpress items.
     /// - Returns: An asynchronous throwing stream of arrays of Wordpress items.
     /// - Throws: WordpressReaderError, or DecodingError.
-    public func stream<T: WordpressItem>(
+    nonisolated public func stream<T: WordpressItem>(
         _ request: WordpressRequest<T>
     ) async throws -> AsyncThrowingStream<[T], Error> {
         let urls = try await fetchPaginatedUrls(request)
@@ -58,7 +58,7 @@ extension WordpressSite {
     /// - Parameter request: Wordpress request used to retrieve Wordpress items.
     /// - Returns: An array of Wordpress items asynchronously.
     /// - Throws: WordpressReaderError, or DecodingError.
-    public func fetch<T: WordpressItem>(
+    nonisolated public func fetch<T: WordpressItem>(
         _ request: WordpressRequest<T>
     ) async throws -> [T] {
         let urls = try await fetchPaginatedUrls(request)
@@ -71,7 +71,7 @@ extension WordpressSite {
     /// - Parameter type: The type of Wordpress item to retrieve using a default request.
     /// - Returns: An array of Wordpress items asynchronously.
     /// - Throws: WordpressReaderError, or DecodingError.
-    public func fetch<T: WordpressItem>(
+    nonisolated public func fetch<T: WordpressItem>(
         _ type: T.Type
     ) async throws -> [T] {
         try await fetch(T.self.request())

@@ -12,7 +12,7 @@ extension WordpressSite {
     /// - Parameter request: Request used to retrieve paginated URLs
     /// - Returns: An array of paginated URLs based on the supplied request.
     /// - Throws: WordpressReaderError if there are URL errors, badly formatted query items, or if there is no totalPages value in the header.
-    func fetchPaginatedUrls<T: WordpressItem>(_ request: WordpressRequest<T>) async throws -> [URL] {
+    nonisolated func fetchPaginatedUrls<T: WordpressItem>(_ request: WordpressRequest<T>) async throws -> [URL] {
         let baseUrl = restAPIv2Url.appendingPathComponent(T.self.urlComponent)
         guard var urlComponents = URLComponents(url: baseUrl, resolvingAgainstBaseURL: true) else {
             throw WordpressReaderError.URLError.badURL(urlString: baseUrl.absoluteString)
@@ -99,7 +99,7 @@ extension WordpressSite {
     ///   - urls: An array of URLs used to retrieve Wordpress items.
     /// - Returns: An array of Wordpress items asynchronously.
     /// - Throws: WordpressReaderError if there are network errors or if the URLs to not return JSON results that match the provided type.
-    func fetchItems<T: WordpressItem>(
+    nonisolated func fetchItems<T: WordpressItem>(
         urlSession: URLSession = .shared,
         _ type: T.Type,
         urls: [URL]
