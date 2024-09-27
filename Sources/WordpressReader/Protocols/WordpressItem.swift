@@ -9,7 +9,7 @@ import Foundation
 
 /// A Wordpress item that is identifiable with a link and a slug.
 ///
-/// Used by WordpressContent and WordpressCategory
+/// Used by ``WordpressContent`` and ``WordpressCategory``
 public protocol WordpressItem: Codable, Identifiable, Hashable, Comparable, Sendable, CustomDebugStringConvertible, ParameterLabels {
     /// Unique Wordpress identifier for the object.
     var id: Int { get }

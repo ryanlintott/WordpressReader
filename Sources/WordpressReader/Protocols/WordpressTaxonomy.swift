@@ -7,7 +7,7 @@
 
 import Foundation
 
-/// A Wordpress Taxonomy used for WordpressCategory and WordpressTag
+/// A Wordpress Taxonomy used for ``WordpressCategory`` and ``WordpressTag``
 public protocol WordpressTaxonomy: WordpressItem {
     /// Number of published posts for the object.
     var count: Int { get }

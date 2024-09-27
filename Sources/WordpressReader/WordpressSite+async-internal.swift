@@ -11,7 +11,7 @@ extension WordpressSite {
     /// Asynchronously returns an array of paginated URLs based on the supplied request.
     /// - Parameter request: Request used to retrieve paginated URLs
     /// - Returns: An array of paginated URLs based on the supplied request.
-    /// - Throws: WordpressReaderError if there are URL errors, badly formatted query items, or if there is no totalPages value in the header.
+    /// - Throws: ``WordpressReaderError`` if there are URL errors, badly formatted query items, or if there is no totalPages value in the header.
     nonisolated func fetchPaginatedUrls<T: WordpressItem>(_ request: WordpressRequest<T>) async throws -> [URL] {
         let baseUrl = restAPIv2Url.appendingPathComponent(T.self.urlComponent)
         guard var urlComponents = URLComponents(url: baseUrl, resolvingAgainstBaseURL: true) else {
@@ -57,7 +57,7 @@ extension WordpressSite {
     ///   - urlSession: URL session to use. (default is .shared)
     ///   - type: Type of Wordpress item to retrieve.
     ///   - urls: Array of URLs to use when fetching item arrays.
-    /// - Returns: An asynchronous throwing stream of arrays of Wordpress items.
+    /// - Returns: An asynchronous throwing stream of arrays of ``WordpressItem``.
     func itemStream<T: WordpressItem>(
         urlSession: URLSession = .shared,
         _ type: T.Type,
@@ -97,8 +97,8 @@ extension WordpressSite {
     ///   - urlSession: URL session to use. (default is .shared)
     ///   - type: Type of Wordpress item to retrieve.
     ///   - urls: An array of URLs used to retrieve Wordpress items.
-    /// - Returns: An array of Wordpress items asynchronously.
-    /// - Throws: WordpressReaderError if there are network errors or if the URLs to not return JSON results that match the provided type.
+    /// - Returns: An array of ``WordpressItem`` asynchronously.
+    /// - Throws: ``WordpressReaderError`` if there are network errors or if the URLs to not return JSON results that match the provided type.
     nonisolated func fetchItems<T: WordpressItem>(
         urlSession: URLSession = .shared,
         _ type: T.Type,

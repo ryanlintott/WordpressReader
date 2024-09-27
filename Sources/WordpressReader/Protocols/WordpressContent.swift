@@ -9,7 +9,7 @@ import Foundation
 
 /// Wordpress Content
 ///
-/// Used by WordpressPage and WordpressPost
+/// Used by ``WordpressPage`` and ``WordpressPost``
 public protocol WordpressContent: WordpressItem {
     /// The date the content was published.
     ///

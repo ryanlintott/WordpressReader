@@ -64,7 +64,7 @@ public extension WordpressRequest {
 public extension WordpressRequest<WordpressPost> {
     /// Creates a Wordpress request for Posts.
     ///
-    /// A custom URL session, start page and max pages can all be set after creation. A fields query item will be ignored and replaced with fields based on the parameter labels for WordpressPost.
+    /// A custom URL session, start page and max pages can all be set after creation. A fields query item will be ignored and replaced with fields based on the parameter labels for ``WordpressPost``.
     /// - Parameter queryItems: Query items used in this request. (default is an empty array)
     /// - Returns: A Wordpress request for Posts.
     static func posts(_ queryItems: Set<WordpressQueryItem> = []) -> Self {
@@ -75,7 +75,7 @@ public extension WordpressRequest<WordpressPost> {
 public extension WordpressRequest<WordpressPage> {
     /// Creates a Wordpress request for Pages.
     ///
-    /// A custom URL session, start page and max pages can all be set after creation. A fields query item will be ignored and replaced with fields based on the parameter labels for WordpressPage.
+    /// A custom URL session, start page and max pages can all be set after creation. A fields query item will be ignored and replaced with fields based on the parameter labels for ``WordpressPage``.
     /// - Parameter queryItems: Query items used in this request. (default is an empty array)
     /// - Returns: A Wordpress request for Pages.
     static func pages(_ queryItems: Set<WordpressQueryItem> = []) -> Self {
@@ -86,7 +86,7 @@ public extension WordpressRequest<WordpressPage> {
 public extension WordpressRequest<WordpressCategory> {
     /// Creates a Wordpress request for Categories.
     ///
-    /// A custom URL session, start page and max pages can all be set after creation. A fields query item will be ignored and replaced with fields based on the parameter labels for WordpressCategory.
+    /// A custom URL session, start page and max pages can all be set after creation. A fields query item will be ignored and replaced with fields based on the parameter labels for ``WordpressCategory``.
     /// - Parameter queryItems: Query items used in this request. (default is an empty array)
     /// - Returns: A Wordpress request for Categories.
     static func categories(_ queryItems: Set<WordpressQueryItem> = []) -> Self {
@@ -97,7 +97,7 @@ public extension WordpressRequest<WordpressCategory> {
 public extension WordpressRequest<WordpressTag> {
     /// Creates a Wordpress request for Tags.
     ///
-    /// A custom URL session, start page and max pages can all be set after creation. A fields query item will be ignored and replaced with fields based on the parameter labels for WordpressTag.
+    /// A custom URL session, start page and max pages can all be set after creation. A fields query item will be ignored and replaced with fields based on the parameter labels for ``WordpressTag``.
     /// - Parameter queryItems: Query items used in this request. (default is an empty array)
     /// - Returns: A Wordpress request for Tags.
     static func tags(_ queryItems: Set<WordpressQueryItem> = []) -> Self {
