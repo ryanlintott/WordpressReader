@@ -12,7 +12,7 @@
 A simple asynchronous way to download and decode public Wordpress content.
 
 # Demo App
-Check out [WordpressReaderExample](https://github.com/ryanlintott/WordpressReaderExample) to see how you can use this package in your iOS app.
+The `Example` folder has an app that demonstrates the features of this package.
 
 # Installation and Usage
 This package is compatible with iOS 14+, macOS 11+, watchOS 7+, tvOS 14+, and visionOS.
