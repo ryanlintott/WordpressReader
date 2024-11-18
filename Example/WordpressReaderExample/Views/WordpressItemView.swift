@@ -28,11 +28,11 @@ struct WordpressItemView<T: WordpressItem>: View {
     var body: some View {
         Form {
             Section(header: Text("ID")) {
-                Text("\(item.id)")
+                Link("\(item.id)", destination: WordpressSite.wordhord.pageURL(id: item.id))
             }
             
             Section(header: Text("Link")) {
-                Text(item.link)
+                Link(item.link, destination: URL(string: item.link)!)
             }
             
             Section(header: Text("Slug")) {

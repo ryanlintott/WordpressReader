@@ -46,4 +46,22 @@ public struct WordpressSite: Codable, Hashable, Sendable {
     public var settingsUrl: URL {
         restAPIv1_1Url
     }
+    
+    /// URL for the site based on the domain with "https://" added to the beginning.
+    public var siteURL: URL {
+        URL(string: "https://\(domain)")!
+    }
+    
+    /// URL that will redirect from the site URL to a page with a specific id.
+    public func pageURL(id: Int) -> URL {
+        let pageIDQueryItem = URLQueryItem(name: "page_id", value: "\(id)")
+        if #available(iOS 16.0, *) {
+            return siteURL.appending(queryItems: [pageIDQueryItem])
+        } else {
+            // Fallback on earlier versions
+            var components = URLComponents(url: siteURL, resolvingAgainstBaseURL: false)!
+            components.queryItems = [pageIDQueryItem]
+            return components.url!
+        }
+    }
 }
