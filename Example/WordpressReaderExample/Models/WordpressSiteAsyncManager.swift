@@ -43,7 +43,7 @@ class WordpressSiteAsyncManager: ObservableObject {
             }
             
             group.addTask {
-                await self.loadPosts(queryItems: [.postedBefore(date), .perPage(100)])
+                await self.loadPosts(queryItems: [.postedBefore(date), .perPage(100)], maxConcurrentTasks: nil)
                 print("RemainingPosts: \(Date().timeIntervalSince(asyncStart))")
             }
             
@@ -85,13 +85,18 @@ class WordpressSiteAsyncManager: ObservableObject {
     /// Loads posts using an async stream
     /// - Parameter queryItems: Set of query items
     /// - Parameter maxPages: Max pages of posts to load
-    func loadPosts(queryItems: Set<WordpressQueryItem> = [], maxPages: Int? = nil) async {
+    /// - Parameter maxConcurrentTasks: Default is unclamped, minimum is 2
+    func loadPosts(
+        queryItems: Set<WordpressQueryItem> = [],
+        maxPages: Int? = nil,
+        maxConcurrentTasks: Int? = nil
+    ) async {
         var request = WordpressPost.request(queryItems)
         if let maxPages = maxPages {
             request.maxPages = maxPages
         }
         do {
-            for try await batch in try await site.stream(request) {
+            for try await batch in try await site.stream(request, maxConcurrentTasks: maxConcurrentTasks) {
                 posts = posts.union(batch)
             }
         } catch let error {

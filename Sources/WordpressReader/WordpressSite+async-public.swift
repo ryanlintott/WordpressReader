@@ -40,39 +40,45 @@ extension WordpressSite {
     }
     
     /// Asynchronously returns an asynchronous throwing stream of arrays of Wordpress items.
-    ///
+    /// 
     /// The throwing asynchronous stream returns batches that correspond to pages from the Wordpress API and will finish when all batches have completed. They may throw a WordpressReaderError if there are URL errors, badly formatted query items, or a bad response or a DecodingError if the JSON doesn't match the Wordpress item.
     /// - Parameter request: Wordpress request used to retrieve Wordpress items.
+    /// - Parameter maxConcurrentTasks: Limits the number of concurrent tasks. Useful when submitting hundreds or thousands of tasks. Default is unclamped, minimum is 2
     /// - Returns: An asynchronous throwing stream of arrays of ``WordpressItem``.
     /// - Throws: ``WordpressReaderError``, or DecodingError.
     nonisolated public func stream<T: WordpressItem>(
-        _ request: WordpressRequest<T>
+        _ request: WordpressRequest<T>,
+        maxConcurrentTasks: Int? = nil
     ) async throws -> AsyncThrowingStream<[T], Error> {
         let urls = try await fetchPaginatedUrls(request)
-        return itemStream(urlSession: request.urlSession, T.self, urls: urls)
+        return itemStream(urlSession: request.urlSession, T.self, urls: urls, maxConcurrentTasks: maxConcurrentTasks)
     }
     
     /// Asynchronously returns an array of Wordpress items.
     ///
     /// Use itemStream() if you want to retrieve item batches in an asynchronous stream.
     /// - Parameter request: Wordpress request used to retrieve Wordpress items.
+    /// - Parameter maxConcurrentTasks: Limits the number of concurrent tasks. Useful when submitting hundreds or thousands of tasks. Default is unclamped, minimum is 2
     /// - Returns: An array of ``WordpressItem`` asynchronously.
     /// - Throws: ``WordpressReaderError``, or DecodingError.
     nonisolated public func fetch<T: WordpressItem>(
-        _ request: WordpressRequest<T>
+        _ request: WordpressRequest<T>,
+        maxConcurrentTasks: Int? = nil
     ) async throws -> [T] {
         let urls = try await fetchPaginatedUrls(request)
-        return try await fetchItems(urlSession: request.urlSession, T.self, urls: urls)
+        return try await fetchItems(urlSession: request.urlSession, T.self, urls: urls, maxConcurrentTasks: maxConcurrentTasks)
     }
     
     /// Asynchronously returns an array of Wordpress items.
     ///
     /// Use itemStream() if you want to retrieve item batches in an asynchronous stream.
     /// - Parameter type: The type of Wordpress item to retrieve using a default request.
+    /// - Parameter maxConcurrentTasks: Limits the number of concurrent tasks. Useful when submitting hundreds or thousands of tasks. Default is unclamped, minimum is 2
     /// - Returns: An array of ``WordpressItem`` asynchronously.
     /// - Throws: ``WordpressReaderError``, or DecodingError.
     nonisolated public func fetch<T: WordpressItem>(
-        _ type: T.Type
+        _ type: T.Type,
+        maxConcurrentTasks: Int? = nil
     ) async throws -> [T] {
         try await fetch(T.self.request())
     }

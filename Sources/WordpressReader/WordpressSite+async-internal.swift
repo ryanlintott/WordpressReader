@@ -57,25 +57,42 @@ extension WordpressSite {
     ///   - urlSession: URL session to use. (default is .shared)
     ///   - type: Type of Wordpress item to retrieve.
     ///   - urls: Array of URLs to use when fetching item arrays.
+    ///   - maxConcurrentTasks: Limits the number of concurrent tasks. Useful when submitting hundreds or thousands of tasks. Default is unclamped, minimum is 2
     /// - Returns: An asynchronous throwing stream of arrays of ``WordpressItem``.
     func itemStream<T: WordpressItem>(
         urlSession: URLSession = .shared,
         _ type: T.Type,
-        urls: [URL]
+        urls: [URL],
+        maxConcurrentTasks: Int?
     ) -> AsyncThrowingStream<[T], Error> {
         AsyncThrowingStream { continuation in
             let task = Task {
                 do {
                     try await withThrowingTaskGroup(of: [T].self) { group in
-                        for url in urls {
+                        let maxConcurrentTasks = min(max(2, maxConcurrentTasks ?? .max), urls.count)
+                        var taskIndex = 0
+                        
+                        for _ in 0..<maxConcurrentTasks {
+                            let url = urls[taskIndex]
                             group.addTask {
                                 try Task.checkCancellation()
                                 return try await urlSession.fetchJsonData([T].self, url: url, dateDecodingStrategy: .wordpressDate)
                             }
+                            taskIndex += 1
                         }
                         
+                        /// As each task is completed a new one is added to the group synchronously. This ensures the group only finishes when all urls are processed.
                         for try await batch in group {
                             continuation.yield(batch)
+                            
+                            if taskIndex < urls.count {
+                                let url = urls[taskIndex]
+                                group.addTask {
+                                    try Task.checkCancellation()
+                                    return try await urlSession.fetchJsonData([T].self, url: url, dateDecodingStrategy: .wordpressDate)
+                                }
+                                taskIndex += 1
+                            }
                         }
                         
                     }
@@ -97,13 +114,15 @@ extension WordpressSite {
     ///   - urlSession: URL session to use. (default is .shared)
     ///   - type: Type of Wordpress item to retrieve.
     ///   - urls: An array of URLs used to retrieve Wordpress items.
+    ///   - maxConcurrentTasks: Limits the number of concurrent tasks. Useful when submitting hundreds or thousands of tasks. Default is nil
     /// - Returns: An array of ``WordpressItem`` asynchronously.
     /// - Throws: ``WordpressReaderError`` if there are network errors or if the URLs to not return JSON results that match the provided type.
     nonisolated func fetchItems<T: WordpressItem>(
         urlSession: URLSession = .shared,
         _ type: T.Type,
-        urls: [URL]
+        urls: [URL],
+        maxConcurrentTasks: Int?
     ) async throws -> [T] {
-        try await itemStream(urlSession: urlSession, type, urls: urls).reduce(into: [], +=)
+        try await itemStream(urlSession: urlSession, type, urls: urls, maxConcurrentTasks: maxConcurrentTasks).reduce(into: [], +=)
     }
 }

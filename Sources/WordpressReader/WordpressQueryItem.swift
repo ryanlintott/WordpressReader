@@ -52,7 +52,7 @@ public enum WordpressQueryItem: Hashable, Comparable, Equatable, Sendable {
     case orderBy(WordpressOrderBy)
     /// Order this query in a specified direction. (default is .desc)
     case order(WordpressOrder)
-    /// Number of objects to include per page (or batch) for large requests. (default is 100)
+    /// Number of objects to include per page (or batch) for large requests. (default here is 100 even though API default is 10, value clamped between 1 and 100)
     case perPage(Int)
     /// Page to return from paginated results. This will be automatically set when iterating through pages in a large request. (default is nil)
     case page(Int)
@@ -87,8 +87,8 @@ public extension WordpressQueryItem {
                 .modifiedBefore(let value): return Self.dateString(value)
         case .orderBy(let value): return value.rawValue
         case .order(let value): return value.rawValue
-        case .perPage(let value),
-                .page(let value): return String(value)
+        case .perPage(let value): return String(min(max(1, value), 100))
+        case .page(let value): return String(value)
         case let .custom(_, value): return value
         }
     }
