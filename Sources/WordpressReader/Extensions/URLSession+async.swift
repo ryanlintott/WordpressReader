@@ -26,6 +26,23 @@ internal extension URLSession {
         dataDecodingStrategy: JSONDecoder.DataDecodingStrategy = .deferredToData,
         dateDecodingStrategy: JSONDecoder.DateDecodingStrategy = .deferredToDate
     ) async throws -> T {
+        try await fetchJsonDataAndResponse(
+            type,
+            url: url,
+            keyDecodingStrategy: keyDecodingStrategy,
+            dataDecodingStrategy: dataDecodingStrategy,
+            dateDecodingStrategy: dateDecodingStrategy
+        ).value
+    }
+
+    /// Retrieves and decodes JSON data along with its HTTP response.
+    nonisolated func fetchJsonDataAndResponse<T: Decodable>(
+        _ type: T.Type,
+        url: URL,
+        keyDecodingStrategy: JSONDecoder.KeyDecodingStrategy = .useDefaultKeys,
+        dataDecodingStrategy: JSONDecoder.DataDecodingStrategy = .deferredToData,
+        dateDecodingStrategy: JSONDecoder.DateDecodingStrategy = .deferredToDate
+    ) async throws -> (value: T, response: HTTPURLResponse) {
         let (data, response) = try await data(from: url)
         
         guard let response = response as? HTTPURLResponse else {
@@ -40,7 +57,7 @@ internal extension URLSession {
         decoder.dataDecodingStrategy = dataDecodingStrategy
         decoder.dateDecodingStrategy = dateDecodingStrategy
         
-        return try decoder.decode(T.self, from: data)
+        return (try decoder.decode(T.self, from: data), response)
     }
     
     /// Retrieves the HTTP URL respose from a URL asynchronously.

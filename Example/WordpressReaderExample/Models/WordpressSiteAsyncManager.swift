@@ -43,7 +43,7 @@ class WordpressSiteAsyncManager: ObservableObject {
             }
             
             group.addTask {
-                await self.loadPosts(queryItems: [.postedBefore(date), .perPage(100)], maxConcurrentTasks: nil)
+                await self.loadPosts(queryItems: [.postedBefore(date), .perPage(100)])
                 print("RemainingPosts: \(Date().timeIntervalSince(asyncStart))")
             }
             
@@ -85,7 +85,7 @@ class WordpressSiteAsyncManager: ObservableObject {
     /// Loads posts using an async stream
     /// - Parameter queryItems: Set of query items
     /// - Parameter maxPages: Max pages of posts to load
-    /// - Parameter maxConcurrentTasks: Default is unclamped, minimum is 2
+    /// - Parameter maxConcurrentTasks: Nil value uses the default. Minimum is 1.
     func loadPosts(
         queryItems: Set<WordpressQueryItem> = [],
         maxPages: Int? = nil,
