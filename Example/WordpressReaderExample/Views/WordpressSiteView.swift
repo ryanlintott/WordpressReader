@@ -11,7 +11,6 @@ import WordpressReader
 struct WordpressSiteView: View {
     @StateObject var siteManager = WordpressSiteManager(site: .wordhord)
     @State private var isLoading: Bool = false
-    @State private var task: Task<Void, Never>? = nil
     
     var tabView: some View {
         WordpressSiteTabs(
@@ -24,20 +23,10 @@ struct WordpressSiteView: View {
     }
     
     var body: some View {
-        if #available(iOS 15, macOS 12, tvOS 15, *) {
-            tabView
-                .task {
-                    await loadContent()
-                }
-        } else {
-            tabView
-                .onAppear {
-                    task = Task {
-                        await loadContent()
-                        task = nil
-                    }
-                }
-        }
+        tabView
+            .task {
+                await loadContent()
+            }
     }
     
     func loadContent() async {

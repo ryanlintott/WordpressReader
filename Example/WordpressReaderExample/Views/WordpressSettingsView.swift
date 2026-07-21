@@ -29,13 +29,25 @@ struct WordpressSettingsView: View {
                     
                     Section(header: Text("Logo")) {
                         Text(settings.logo.url)
-                        URLImageView(url: settings.logo.url)
+                        AsyncImage(url: URL(string: settings.logo.url)) { image in
+                            image
+                                .resizable()
+                                .scaledToFit()
+                        } placeholder: {
+                            EmptyView()
+                        }
                             .padding()
                     }
                     
                     Section(header: Text("Icon")) {
                         Text(settings.icon.img)
-                        URLImageView(url: settings.icon.img)
+                        AsyncImage(url: URL(string: settings.icon.img)) { image in
+                            image
+                                .resizable()
+                                .scaledToFit()
+                        } placeholder: {
+                            EmptyView()
+                        }
                             .frame(width: 96)
                             .padding()
                     }

@@ -17,7 +17,6 @@
 		CF99338426544ADB00EE2348 /* WordpressSiteView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF99337F26544ADB00EE2348 /* WordpressSiteView.swift */; };
 		CF99338526544ADB00EE2348 /* WordpressSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF99338026544ADB00EE2348 /* WordpressSettingsView.swift */; };
 		CF99338B26544B3B00EE2348 /* WordpressSite-extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF99338A26544B3B00EE2348 /* WordpressSite-extension.swift */; };
-		CF9933972654530600EE2348 /* URLImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF9933962654530600EE2348 /* URLImageView.swift */; };
 		CF993399265456A700EE2348 /* WordpressSiteManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF993398265456A700EE2348 /* WordpressSiteManager.swift */; };
 		CFF0B4CE2C519349009F2A4B /* WordpressSiteTabs.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFF0B4CD2C519349009F2A4B /* WordpressSiteTabs.swift */; };
 		CFF14C3427F396B2001FF3A6 /* WordpressSiteAsyncManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFF14C3327F396B2001FF3A6 /* WordpressSiteAsyncManager.swift */; };
@@ -36,7 +35,6 @@
 		CF99337F26544ADB00EE2348 /* WordpressSiteView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WordpressSiteView.swift; sourceTree = "<group>"; };
 		CF99338026544ADB00EE2348 /* WordpressSettingsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WordpressSettingsView.swift; sourceTree = "<group>"; };
 		CF99338A26544B3B00EE2348 /* WordpressSite-extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WordpressSite-extension.swift"; sourceTree = "<group>"; };
-		CF9933962654530600EE2348 /* URLImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLImageView.swift; sourceTree = "<group>"; };
 		CF993398265456A700EE2348 /* WordpressSiteManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WordpressSiteManager.swift; sourceTree = "<group>"; };
 		CFF0B4CD2C519349009F2A4B /* WordpressSiteTabs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WordpressSiteTabs.swift; sourceTree = "<group>"; };
 		CFF14C3327F396B2001FF3A6 /* WordpressSiteAsyncManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WordpressSiteAsyncManager.swift; sourceTree = "<group>"; };
@@ -102,7 +100,6 @@
 				CF61BB5326548FBB009936FA /* WordpressItemListView.swift */,
 				CF61BB5126548BDE009936FA /* WordpressItemView.swift */,
 				CF99338026544ADB00EE2348 /* WordpressSettingsView.swift */,
-				CF9933962654530600EE2348 /* URLImageView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -197,7 +194,6 @@
 				CF99338B26544B3B00EE2348 /* WordpressSite-extension.swift in Sources */,
 				CF993399265456A700EE2348 /* WordpressSiteManager.swift in Sources */,
 				CF99338426544ADB00EE2348 /* WordpressSiteView.swift in Sources */,
-				CF9933972654530600EE2348 /* URLImageView.swift in Sources */,
 				CF61BB5226548BDE009936FA /* WordpressItemView.swift in Sources */,
 				CFF0B4CE2C519349009F2A4B /* WordpressSiteTabs.swift in Sources */,
 				CF9933522654463F00EE2348 /* ContentView.swift in Sources */,
@@ -263,7 +259,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -321,7 +317,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
@@ -343,12 +339,12 @@
 				DEVELOPMENT_TEAM = 97423JQ8B9;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = WordpressReaderExample/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 11.0;
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.abetterwaytodo.WordpressReaderExample;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "appletvos appletvsimulator iphoneos iphonesimulator macosx xros xrsimulator";
@@ -357,7 +353,7 @@
 				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = "1,2,3,7";
-				TVOS_DEPLOYMENT_TARGET = 14.0;
+				TVOS_DEPLOYMENT_TARGET = 15.0;
 				XROS_DEPLOYMENT_TARGET = 1.0;
 			};
 			name = Debug;
@@ -372,12 +368,12 @@
 				DEVELOPMENT_TEAM = 97423JQ8B9;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = WordpressReaderExample/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 11.0;
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.abetterwaytodo.WordpressReaderExample;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "appletvos appletvsimulator iphoneos iphonesimulator macosx xros xrsimulator";
@@ -386,7 +382,7 @@
 				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = "1,2,3,7";
-				TVOS_DEPLOYMENT_TARGET = 14.0;
+				TVOS_DEPLOYMENT_TARGET = 15.0;
 				XROS_DEPLOYMENT_TARGET = 1.0;
 			};
 			name = Release;
