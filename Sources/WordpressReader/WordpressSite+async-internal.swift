@@ -8,13 +8,13 @@
 import Foundation
 
 extension WordpressSite {
-    /// Fetches the first requested page and returns it with URLs for the remaining pages.
+    /// Fetches the first requested page and returns it with page numbers and URLs for the remaining pages.
     /// - Parameter request: Request used to retrieve paginated items.
-    /// - Returns: The first requested batch, when available, and URLs for the remaining pages.
+    /// - Returns: The first requested batch, when available, and page numbers and URLs for the remaining pages.
     /// - Throws: ``WordpressReaderError`` if there are URL errors, badly formatted query items, or if there is no totalPages value in the header.
     nonisolated func fetchPagination<T: WordpressItem>(
         _ request: WordpressRequest<T>
-    ) async throws -> (firstBatch: [T]?, remainingUrls: [URL]) {
+    ) async throws -> (firstBatch: [T]?, remainingPages: [(number: Int, url: URL)]) {
         let baseUrl = restAPIv2Url.appendingPathComponent(T.self.urlComponent)
         guard var urlComponents = URLComponents(url: baseUrl, resolvingAgainstBaseURL: true) else {
             throw WordpressReaderError.URLError.badURL(urlString: baseUrl.absoluteString)
@@ -57,7 +57,7 @@ extension WordpressSite {
         }
         
         // Confirm all remaining page URLs are valid
-        let remainingUrls = try pageRange?.compactMap { page -> URL? in
+        let remainingPages = try pageRange?.compactMap { page -> (number: Int, url: URL)? in
             if firstBatch != nil && page == 1 {
                 return nil
             }
@@ -68,10 +68,10 @@ extension WordpressSite {
             guard let url = pageUrlComponents.url else {
                 throw WordpressReaderError.URLError.badURLComponents
             }
-            return url
+            return (page, url)
         } ?? []
 
-        return (firstBatch, remainingUrls)
+        return (firstBatch, remainingPages)
     }
     
 }

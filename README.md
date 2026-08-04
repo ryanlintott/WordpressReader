@@ -15,7 +15,7 @@ A simple asynchronous way to download and decode public Wordpress content.
 The `Example` folder has an app that demonstrates the features of this package.
 
 # Installation and Usage
-This package is compatible with iOS 14+, macOS 11+, watchOS 7+, tvOS 14+, and visionOS.
+This package is compatible with iOS 15+, macOS 12+, watchOS 8+, tvOS 15+, and visionOS 1+.
 
 1. In Xcode go to `File -> Add Packages`
 2. Paste in the repo's url: `https://github.com/ryanlintott/WordpressReader` and select by version.
@@ -68,10 +68,18 @@ self.posts = try await site.fetch(recentPosts)
 self.posts += try await site.fetch(remainingPosts)
 ```
 
-The default .fetch() will get pages in parallel but only return when they're all done. If you want each batch in order as soon as they're ready, use an async stream:
+The default `.fetch()` gets pages in parallel but only returns when they're all done. If you want each batch as soon as it's ready, use an async stream:
 
 ```swift
 for try await batch in try await site.stream(request) {
-  self.posts += posts
+  self.posts += batch
+}
+```
+
+To receive the page number with each batch as it completes, use `streamPages()`:
+
+```swift
+for try await (pageNumber, batch) in try await site.streamPages(request) {
+  batches[pageNumber] = batch
 }
 ```
