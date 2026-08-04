@@ -1,9 +1,73 @@
 import Foundation
-import XCTest
+import Testing
 @testable import WordpressReader
 
-final class WordpressReaderTests: XCTestCase {
-    func testStreamEmitsBatchesInCompletionOrder() async throws {
+struct WordpressReaderTests {
+    @Test
+    func requestAddsGeneratedFieldsDuringInitialization() {
+        let request = WordpressRequest<WordpressCategory>()
+
+        expectGeneratedFields(in: request)
+    }
+
+    @Test
+    func requestPreservesOtherQueryItemsDuringInitialization() {
+        let queryItem = WordpressQueryItem.order(.asc)
+        let request = WordpressRequest<WordpressCategory>(queryItems: [queryItem])
+
+        #expect(request.queryItems.contains(queryItem))
+        expectGeneratedFields(in: request)
+    }
+
+    @Test
+    func requestReplacesCallerSuppliedFieldsDuringInitialization() {
+        let request = WordpressRequest<WordpressCategory>(
+            queryItems: [
+                .fields(["id"]),
+                .custom(name: "_fields", value: "slug"),
+            ]
+        )
+
+        expectGeneratedFields(in: request)
+    }
+
+    @Test
+    func requestRestoresGeneratedFieldsAfterAssignmentAndMutation() {
+        var request = WordpressRequest<WordpressCategory>()
+
+        request.queryItems = [.fields(["id"])]
+        expectGeneratedFields(in: request)
+
+        request.queryItems.insert(.custom(name: "_fields", value: "slug"))
+        expectGeneratedFields(in: request)
+    }
+
+    @Test
+    func requestGeneratesExactlyOneFieldsURLQueryItem() {
+        let request = WordpressRequest<WordpressCategory>(
+            queryItems: [
+                .fields(["id"]),
+                .custom(name: "_fields", value: "slug"),
+            ]
+        )
+        let fieldsQueryItems = request.urlQueryItems.filter { $0.name == "_fields" }
+
+        #expect(fieldsQueryItems.count == 1)
+        #expect(fieldsQueryItems.first?.value == WordpressCategory.parameterLabels.joined(separator: ","))
+    }
+
+    @Test
+    func requestsWithDifferentCallerSuppliedFieldsNormalizeEquivalently() {
+        let firstRequest = WordpressRequest<WordpressCategory>(queryItems: [.fields(["id"])])
+        let secondRequest = WordpressRequest<WordpressCategory>(
+            queryItems: [.custom(name: "_fields", value: "slug")]
+        )
+
+        #expect(firstRequest == secondRequest)
+    }
+
+    @Test(.tags(.networking))
+    func streamEmitsBatchesInCompletionOrder() async throws {
         let (site, request, urlSession) = makeRequest()
         defer { urlSession.invalidateAndCancel() }
 
@@ -12,10 +76,11 @@ final class WordpressReaderTests: XCTestCase {
             pageIDs.append(batch.map(\.id))
         }
 
-        XCTAssertEqual(pageIDs, [[1], [3], [2]])
+        #expect(pageIDs == [[1], [3], [2]])
     }
 
-    func testStreamPagesIncludesPageNumbersInCompletionOrder() async throws {
+    @Test(.tags(.networking))
+    func streamPagesFetchesStartingPageBeforeRemainingPages() async throws {
         let (site, request, urlSession) = makeRequest(startPage: 2)
         defer { urlSession.invalidateAndCancel() }
 
@@ -26,8 +91,8 @@ final class WordpressReaderTests: XCTestCase {
             pageIDs.append(batch.map(\.id))
         }
 
-        XCTAssertEqual(pageNumbers, [3, 2])
-        XCTAssertEqual(pageIDs, [[3], [2]])
+        #expect(pageNumbers == [2, 3])
+        #expect(pageIDs == [[2], [3]])
     }
 
     private func makeRequest(
@@ -43,6 +108,22 @@ final class WordpressReaderTests: XCTestCase {
         request.startPage = startPage
         return (site, request, urlSession)
     }
+
+    private func expectGeneratedFields(
+        in request: WordpressRequest<WordpressCategory>,
+        sourceLocation: SourceLocation = #_sourceLocation
+    ) {
+        let fields = request.queryItems.filter { $0.name == "_fields" }
+        #expect(fields.count == 1, sourceLocation: sourceLocation)
+        #expect(
+            fields.first?.value == WordpressCategory.parameterLabels.joined(separator: ","),
+            sourceLocation: sourceLocation
+        )
+    }
+}
+
+extension Tag {
+    @Tag static var networking: Self
 }
 
 private final class OutOfOrderPagesURLProtocol: URLProtocol, @unchecked Sendable {
@@ -55,11 +136,21 @@ private final class OutOfOrderPagesURLProtocol: URLProtocol, @unchecked Sendable
     }
 
     override func startLoading() {
-        let page = URLComponents(url: request.url!, resolvingAgainstBaseURL: false)?
+        let pageValue = URLComponents(url: request.url!, resolvingAgainstBaseURL: false)?
             .queryItems?
             .first(where: { $0.name == "page" })?
             .value
-            .flatMap(Int.init) ?? 1
+        guard let page = pageValue.flatMap(Int.init) else {
+            let response = HTTPURLResponse(
+                url: request.url!,
+                statusCode: 400,
+                httpVersion: nil,
+                headerFields: nil
+            )!
+            client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
+            client?.urlProtocolDidFinishLoading(self)
+            return
+        }
         let delay = page == 2 ? 0.2 : 0.01
 
         DispatchQueue.global().asyncAfter(deadline: .now() + delay) { [self] in

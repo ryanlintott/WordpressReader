@@ -83,8 +83,8 @@ extension WordpressSite {
             let task = Task {
                 do {
                     try Task.checkCancellation()
-                    if let firstBatch = pagination.firstBatch {
-                        continuation.yield(transform(1, firstBatch))
+                    if let firstPage = pagination.firstPage {
+                        continuation.yield(transform(firstPage.number, firstPage.batch))
                     }
 
                     try await withThrowingTaskGroup(of: (pageNumber: Int, batch: [T]).self) { group in

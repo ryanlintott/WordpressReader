@@ -15,7 +15,7 @@ public struct WordpressRequest<T: WordpressItem>: Hashable, Equatable, Sendable 
     public var startPage: Int = 1
     /// Maximum number of pages to return. (default is nil)
     ///
-    /// The default number of items per page is 100 but it can also be specified in query items.
+    /// The number of items per page can be specified in query items. When omitted, the Wordpress API defaults to 10.
     public var maxPages: Int? = nil
     
     /// A set of query items that can be used to narrow this request.
@@ -23,7 +23,8 @@ public struct WordpressRequest<T: WordpressItem>: Hashable, Equatable, Sendable 
     /// A field query item inside an assigned set will be ignored and replaced with fields based on the parameter labels for the supplied Wordpress item type.
     public var queryItems: Set<WordpressQueryItem> {
         didSet {
-            queryItems.update(with: .fields(T.parameterLabels))
+            // Property observers don't run during initialization, so init repeats this normalization.
+            queryItems = queryItems.replacingFieldsWithParameterLabels(from: T.self)
         }
     }
     
@@ -32,7 +33,7 @@ public struct WordpressRequest<T: WordpressItem>: Hashable, Equatable, Sendable 
     /// A custom URL session, start page and max pages can all be set after creation. A fields query item will be ignored and replaced with fields based on the parameter labels for the supplied Wordpress item type.
     /// - Parameter queryItems: Query items used in this request. (default is an empty array)
     public init(queryItems: Set<WordpressQueryItem> = []) {
-        self.queryItems = queryItems
+        self.queryItems = queryItems.replacingFieldsWithParameterLabels(from: T.self)
     }
 }
 

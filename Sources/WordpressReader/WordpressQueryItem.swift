@@ -52,7 +52,7 @@ public enum WordpressQueryItem: Hashable, Comparable, Equatable, Sendable {
     case orderBy(WordpressOrderBy)
     /// Order this query in a specified direction. (default is .desc)
     case order(WordpressOrder)
-    /// Number of objects to include per page (or batch) for large requests. (default here is 100 even though API default is 10, value clamped between 1 and 100)
+    /// Number of objects to include per page (or batch) for large requests. Values are clamped between 1 and 100. When omitted, the Wordpress API defaults to 10.
     case perPage(Int)
     /// Page to return from paginated results. This will be automatically set when iterating through pages in a large request. (default is nil)
     case page(Int)
@@ -153,5 +153,16 @@ public extension Set where Element == WordpressQueryItem {
     /// Returns nil if no page value is specified in any element.
     var page: Int? {
         pages.first
+    }
+}
+
+extension Set where Element == WordpressQueryItem {
+    func replacingFieldsWithParameterLabels<T: WordpressItem>(
+        from type: T.Type
+    ) -> Self {
+        let fieldsQueryItem = WordpressQueryItem.fields(type.parameterLabels)
+        var queryItems = Set(filter { $0.name != fieldsQueryItem.name })
+        queryItems.insert(fieldsQueryItem)
+        return queryItems
     }
 }
