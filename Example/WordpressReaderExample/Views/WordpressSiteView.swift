@@ -14,8 +14,8 @@ struct WordpressSiteView: View {
     
     var tabView: some View {
         WordpressSiteTabs(
-            posts: siteManager.posts,
-            pages: siteManager.pages,
+            posts: siteManager.posts.sorted { $0.date_gmt > $1.date_gmt },
+            pages: siteManager.pages.sorted { $0.date_gmt > $1.date_gmt },
             categories: siteManager.categories,
             settings: siteManager.settings,
             isLoading: isLoading

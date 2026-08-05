@@ -14,21 +14,21 @@ enum WordpressSiteViewTab: String {
 
 struct WordpressSiteTabs: View {
     @State private var selection: WordpressSiteViewTab = .posts
-    let posts: Set<WordpressPost>
-    let pages: Set<WordpressPage>
+    let posts: [WordpressPost]
+    let pages: [WordpressPage]
     let categories: [WordpressCategory]
     let settings: WordpressSettings?
     let isLoading: Bool
     
     var body: some View {
         TabView(selection: $selection) {
-            WordpressItemListView(title: "Posts", items: posts.sorted(by: { $0.date_gmt > $1.date_gmt }), loading: isLoading)
+            WordpressItemListView(title: "Posts", items: posts, loading: isLoading)
                 .tabItem {
                     Label("Posts", systemImage: "globe")
                 }
                 .tag(WordpressSiteViewTab.posts)
             
-            WordpressItemListView(title: "Pages", items: pages.sorted(by: { $0.date_gmt > $1.date_gmt }), loading: isLoading)
+            WordpressItemListView(title: "Pages", items: pages, loading: isLoading)
                 .tabItem {
                     Label("Pages", systemImage: "doc.plaintext")
                 }

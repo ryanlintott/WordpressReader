@@ -32,7 +32,7 @@ struct WordpressSiteAsyncView: View {
     func loadContent() async {
         isLoading = true
         defer { isLoading = false }
-        await siteManager.loadRecentThenAll()
+        await siteManager.loadAll()
     }
 }
 

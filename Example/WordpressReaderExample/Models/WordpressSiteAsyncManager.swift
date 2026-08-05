@@ -13,8 +13,8 @@ class WordpressSiteAsyncManager: ObservableObject {
     let site: WordpressSite
     
     @Published var singlePost: WordpressPost? = nil
-    @Published var posts: Set<WordpressPost> = []
-    @Published var pages: Set<WordpressPage> = []
+    @Published var posts: [WordpressPost] = []
+    @Published var pages: [WordpressPage] = []
     @Published var categories: [WordpressCategory] = []
     @Published var settings: WordpressSettings? = nil
     @Published var error: String? = nil
@@ -23,44 +23,29 @@ class WordpressSiteAsyncManager: ObservableObject {
         self.site = site
     }
     
-    func loadRecentThenAll(recentIfAfterDate date: Date = Date().addingTimeInterval(-20 * 24 * 60 * 60)) async {
-        let asyncStart = Date()
+    func loadAll() async {
+        let asyncStart = Date.now
         
         await withTaskGroup(of: Void.self) { group in
             group.addTask {
                 await self.loadSettings()
-                print("Settings: \(Date().timeIntervalSince(asyncStart))")
+                print("Settings: \(Date.now.timeIntervalSince(asyncStart))")
             }
             
             group.addTask {
                 await self.loadCategories()
-                print("Categories: \(Date().timeIntervalSince(asyncStart))")
+                print("Categories: \(Date.now.timeIntervalSince(asyncStart))")
             }
             
             group.addTask {
-                await self.loadPosts(queryItems: [.postedAfter(date)])
-                print("RecentPosts: \(Date().timeIntervalSince(asyncStart))")
+                await self.loadPosts()
+                print("AllPosts: \(Date.now.timeIntervalSince(asyncStart))")
             }
-            
-            group.addTask {
-                await self.loadPosts(queryItems: [.postedBefore(date), .perPage(100)])
-                print("RemainingPosts: \(Date().timeIntervalSince(asyncStart))")
-            }
-            
+
             group.addTask {
                 await self.loadPages()
-                print("Pages: \(Date().timeIntervalSince(asyncStart))")
+                print("Pages: \(Date.now.timeIntervalSince(asyncStart))")
             }
-        }
-        print("All done")
-    }
-    
-    func loadAll() async {
-        await withTaskGroup(of: Void.self) { group in
-            group.addTask { await self.loadSettings() }
-            group.addTask { await self.loadCategories() }
-            group.addTask { await self.loadPosts(queryItems: [.perPage(100)]) }
-            group.addTask { await self.loadPages() }
         }
         print("All done")
     }
@@ -82,43 +67,38 @@ class WordpressSiteAsyncManager: ObservableObject {
         }
     }
     
+    private static let perPage = WordpressQueryItem.perPage(100)
+    
     /// Loads posts using an async stream
-    /// - Parameter queryItems: Set of query items
-    /// - Parameter maxPages: Max pages of posts to load
-    /// - Parameter maxConcurrentTasks: Nil value uses the default. Minimum is 1.
-    func loadPosts(
-        queryItems: Set<WordpressQueryItem> = [],
-        maxPages: Int? = nil,
-        maxConcurrentTasks: Int? = nil
-    ) async {
-        var request = WordpressPost.request(queryItems)
-        if let maxPages = maxPages {
-            request.maxPages = maxPages
-        }
+    func loadPosts() async {
         do {
-            for try await batch in try await site.stream(request, maxConcurrentTasks: maxConcurrentTasks) {
-                posts = posts.union(batch)
+            for try await batch in try await site.stream(.posts([.perPage(100)])) {
+                posts = (posts + batch)
+                    .reduce(into: [Int: WordpressPost]()) {
+                        $0[$1.id] = $1
+                    }
+                    .values
+                    .sorted { $0.date_gmt > $1.date_gmt }
             }
         } catch let error {
             processError(error)
         }
     }
     
-    // Loads up to 100 pages without batching
-    func loadPages(queryItems: Set<WordpressQueryItem> = []) async {
+    // Loads all pages
+    func loadPages() async {
         do {
-            let pages = try await site.fetch(.pages(queryItems))
-            self.pages = Set(pages)
+            pages = try await site.fetch(.pages([.perPage(100)]))
         } catch let error {
             processError(error)
         }
         
     }
     
-    // Loads all categories using batching
+    // Loads all categories
     func loadCategories() async {
         do {
-            categories = try await site.fetch(.categories())
+            categories = try await site.fetch(.categories([.perPage(100)]))
         } catch let error {
             processError(error)
         }
