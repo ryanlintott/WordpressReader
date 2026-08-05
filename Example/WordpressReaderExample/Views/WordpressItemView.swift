@@ -24,11 +24,27 @@ struct WordpressItemView<T: WordpressItem>: View {
             return item.slug
         }
     }
+
+    var idURL: URL? {
+        if item is WordpressPost {
+            WordpressSite.wordhord.postURL(id: item.id)
+        } else if item is WordpressPage {
+            WordpressSite.wordhord.pageURL(id: item.id)
+        } else if item is WordpressCategory {
+            WordpressSite.wordhord.categoryURL(id: item.id)
+        } else {
+            nil
+        }
+    }
     
     var body: some View {
         Form {
             Section(header: Text("ID")) {
-                Link("\(item.id)", destination: WordpressSite.wordhord.pageURL(id: item.id))
+                if let idURL {
+                    Link("\(item.id)", destination: idURL)
+                } else {
+                    Text("\(item.id)")
+                }
             }
             
             Section(header: Text("Link")) {

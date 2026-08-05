@@ -51,16 +51,29 @@ public struct WordpressSite: Codable, Hashable, Sendable {
     public var siteURL: URL {
         URL(string: "https://\(domain)")!
     }
+
+    /// URL that redirects to a post based on its id.
+    public func postURL(id: Int) -> URL {
+        url(appending: URLQueryItem(name: "p", value: "\(id)"))
+    }
     
-    /// URL that will redirect from the site URL to a page with a specific id.
+    /// URL that redirects to a page based on its id.
     public func pageURL(id: Int) -> URL {
-        let pageIDQueryItem = URLQueryItem(name: "page_id", value: "\(id)")
-        if #available(iOS 16.0, *) {
-            return siteURL.appending(queryItems: [pageIDQueryItem])
+        url(appending: URLQueryItem(name: "page_id", value: "\(id)"))
+    }
+
+    /// URL that opens a category archive based on its id.
+    public func categoryURL(id: Int) -> URL {
+        url(appending: URLQueryItem(name: "cat", value: "\(id)"))
+    }
+
+    private func url(appending queryItem: URLQueryItem) -> URL {
+        if #available(macOS 13.0, iOS 16.0, tvOS 16.0, watchOS 9.0, *) {
+            return siteURL.appending(queryItems: [queryItem])
         } else {
             // Fallback on earlier versions
             var components = URLComponents(url: siteURL, resolvingAgainstBaseURL: false)!
-            components.queryItems = [pageIDQueryItem]
+            components.queryItems = [queryItem]
             return components.url!
         }
     }

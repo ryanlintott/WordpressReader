@@ -4,6 +4,15 @@ import Testing
 
 struct WordpressReaderTests {
     @Test
+    func supportedItemsCreateIDBasedURLs() {
+        let site = WordpressSite(domain: "example.com", name: "Example")
+
+        #expect(site.postURL(id: 42).absoluteString == "https://example.com?p=42")
+        #expect(site.pageURL(id: 42).absoluteString == "https://example.com?page_id=42")
+        #expect(site.categoryURL(id: 42).absoluteString == "https://example.com?cat=42")
+    }
+
+    @Test
     func requestAddsGeneratedFieldsDuringInitialization() {
         let request = WordpressRequest<WordpressCategory>()
 
