@@ -11,7 +11,7 @@ extension WordpressSite {
     @available(
         *,
         deprecated,
-        message: "Use the async fetchSettings(urlSession:) method instead."
+        message: "Use the async fetchSettings(urlSession:) method instead. This method will be removed in 1.0.0."
     )
     public func fetchSettings(completion: @Sendable @escaping (Result<WordpressSettings, Error>) -> Void) {
         Task {
@@ -27,7 +27,7 @@ extension WordpressSite {
     @available(
         *,
         deprecated,
-        message: "Use the async fetchById(urlSession:_:id:) method instead."
+        message: "Use the async fetchById(urlSession:_:id:) method instead. This method will be removed in 1.0.0."
     )
     public func fetchById<T: WordpressItem>(_ type: T.Type, id: Int, completion: @Sendable @escaping (Result<T, Error>) -> Void) {
         Task {
@@ -43,7 +43,7 @@ extension WordpressSite {
     @available(
         *,
         deprecated,
-        message: "Use the async stream(_:maxConcurrentTasks:) method instead."
+        message: "Use the async stream(_:maxConcurrentTasks:) method instead. This method will be removed in 1.0.0."
     )
     public func fetch<T: WordpressContent>(
         _ request: WordpressRequest<T>,
@@ -65,7 +65,7 @@ extension WordpressSite {
     @available(
         *,
         deprecated,
-        message: "Create a WordpressRequest and use the async stream(_:maxConcurrentTasks:) method instead."
+        message: "Create a WordpressRequest and use the async stream(_:maxConcurrentTasks:) method instead. This method will be removed in 1.0.0."
     )
     public func fetchContent<T: WordpressContent>(
         _ type: T.Type,
@@ -123,7 +123,7 @@ extension WordpressSite {
     @available(
         *,
         deprecated,
-        message: "Use the async stream(_:maxConcurrentTasks:) method instead."
+        message: "Use the async stream(_:maxConcurrentTasks:) method instead. This method will be removed in 1.0.0."
     )
     public func fetchItems<T: WordpressItem>(
         _ type: T.Type,
@@ -147,7 +147,7 @@ extension WordpressSite {
     @available(
         *,
         deprecated,
-        message: "Use the async fetch(_:maxConcurrentTasks:) method instead."
+        message: "Use the async fetch(_:maxConcurrentTasks:) method instead. This method will be removed in 1.0.0."
     )
     public func fetchAllItems<T: WordpressItem>(
         _ type: T.Type,

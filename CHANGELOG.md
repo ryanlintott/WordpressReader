@@ -1,0 +1,38 @@
+# Changelog
+
+## 0.5.0 - 2026-08-14
+
+### Breaking Changes
+
+- Updated the package to Swift tools 6.0.
+- Raised the minimum supported platforms to iOS 15, macOS 12, watchOS 8, and tvOS 15. visionOS remains at version 1.
+- Changed the default maximum number of concurrent pagination tasks from unlimited to 8. Explicit values are now clamped to a minimum of 1 instead of 2.
+
+### Deprecation Migration
+
+The closure-based fetch APIs remain available in 0.5.0 but will be removed in 1.0.0. Upgrade to 0.5.0 first and resolve these deprecation warnings before updating to 1.0.0:
+
+- Replace `fetchSettings(completion:)` with the async `fetchSettings(urlSession:)` method.
+- Replace `fetchById(_:id:completion:)` with the async `fetchById(urlSession:_:id:)` method.
+- Replace the batch-completion `fetch`, `fetchContent`, and `fetchItems` methods with `stream(_:maxConcurrentTasks:)`. Create a `WordpressRequest` first when migrating from `fetchContent`.
+- Replace `fetchAllItems(_:completion:)` with `fetch(_:maxConcurrentTasks:)`.
+
+### Added
+
+- Added `WordpressSite.streamPages(_:maxConcurrentTasks:)`, which includes each page number with its batch. Pages are emitted as their requests complete and may arrive out of order.
+- Added `WordpressSite.postURL(id:)` and `WordpressSite.categoryURL(id:)` for creating public navigation URLs from item IDs.
+- Added a shared `WordpressReader.xcworkspace` and `WordpressReader Development` scheme for package and example-app development.
+- Added Swift Package Index configuration for building and hosting the package's DocC documentation.
+
+### Changed
+
+- Pagination now uses the decoded starting-page response when reading the total-page count instead of requesting that page a second time.
+- Updated the example app to load all content concurrently, preserve sorted post and page arrays while batches arrive, use the new ID-based URL helpers, and use `AsyncImage`.
+- Converted the example app's source groups to filesystem-synchronized folders.
+- Expanded the `WordpressDate` documentation and clarified pagination, batch-order, and WordPress `per_page` default behavior in the API documentation and README.
+
+### Fixed
+
+- Fixed paginated requests with a `startPage` other than 1 so the starting page is fetched first and included in the results.
+- Fixed `fetch(_:maxConcurrentTasks:)` when called with a Wordpress item type so it forwards the requested concurrency limit.
+- Fixed `WordpressRequest` initialization so generated `_fields` always replace caller-supplied field values while preserving other query items.
