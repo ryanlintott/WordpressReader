@@ -60,7 +60,7 @@ extension WordpressSite {
     /// The stream returns each page number and batch as that page completes and will finish when all pages have completed. Results may arrive out of page order. The stream may throw a WordpressReaderError if there are URL errors, badly formatted query items, or a bad response or a DecodingError if the JSON doesn't match the Wordpress item.
     /// - Parameter request: Wordpress request used to retrieve Wordpress items.
     /// - Parameter maxConcurrentTasks: The maximum number of concurrent tasks. Default is 8, minimum is 1.
-    /// - Returns: An asynchronous throwing stream containing page numbers and arrays of ``WordpressItem``.
+    /// - Returns: An asynchronous throwing stream containing page numbers (first page default is 1) and arrays of ``WordpressItem``.
     /// - Throws: ``WordpressReaderError``, or DecodingError.
     nonisolated public func streamPages<T: WordpressItem>(
         _ request: WordpressRequest<T>,

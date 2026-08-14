@@ -7,11 +7,19 @@
 
 import Foundation
 
-/// An empty enum for storing Wordpress date formatters
+/// A namespace for date coding strategies used with WordPress REST API payloads.
+///
+/// WordPress returns post and page timestamps such as `date_gmt` and
+/// `modified_gmt` in a fixed, whole-second representation that does not fully
+/// conform to ISO 8601 or RFC 3339. These strategies provide compatibility with
+/// that response format. Date-valued query parameters are encoded separately
+/// using `ISO8601DateFormatter`.
 enum WordpressDate {
-    /// Date formatter for Wordpress style dates
+    /// A formatter for the fixed, UTC timestamps returned in WordPress payloads.
     ///
-    /// Details: https://core.trac.wordpress.org/ticket/41032
+    /// WordPress core emits these timestamps without timezone information even
+    /// for fields whose names end in `_gmt`, so the formatter interprets them
+    /// as UTC. See https://core.trac.wordpress.org/ticket/41032 for details.
     static let formatter: DateFormatter = {
         var formatter = DateFormatter()
         formatter.locale = Locale(identifier: "en_US")
@@ -20,7 +28,7 @@ enum WordpressDate {
         return formatter
     }()
     
-    /// Strategy for decoding Wordpress style dates.
+    /// A strategy for decoding fixed-format dates from WordPress REST payloads.
     /// - Parameter decoder: Decoder to apply strategy to.
     /// - Returns: Decoded date.
     static func dateDecodingStrategy(_ decoder: any Decoder) throws -> Date {
@@ -37,7 +45,7 @@ enum WordpressDate {
         return date
     }
     
-    /// Strategy for encoding Wordpress style dates.
+    /// A strategy for encoding dates in the WordPress payload format.
     /// - Parameters:
     ///   - date: Date to encode.
     ///   - encoder: Encoder to apply strategy to.
@@ -48,11 +56,11 @@ enum WordpressDate {
 }
 
 extension JSONDecoder.DateDecodingStrategy {
-    /// Wordpress style date decoder.
+    /// A decoder for fixed-format dates in WordPress REST payloads.
     static let wordpressDate: JSONDecoder.DateDecodingStrategy = .custom(WordpressDate.dateDecodingStrategy)
 }
 
 extension JSONEncoder.DateEncodingStrategy {
-    /// Wordpress style date encoder.
+    /// An encoder for dates in the WordPress REST payload format.
     static let wordpressDate: JSONEncoder.DateEncodingStrategy = .custom(WordpressDate.dateEncodingStrategy)
 }
