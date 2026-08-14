@@ -29,11 +29,6 @@ struct ContentView: View {
                 .tabItem {
                     Label("Async", systemImage: "sparkles")
                 }
-            
-            WordpressSiteView()
-                .tabItem {
-                    Label("Closure", systemImage: "network")
-                }
         }
     }
 }
