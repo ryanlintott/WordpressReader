@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.5.1 - 2026-08-14
+
+### Added
+
+- Added github actions to test Swift 6 compatibility and test on all platforms
+
 ## 0.5.0 - 2026-08-14
 
 ### Breaking Changes
