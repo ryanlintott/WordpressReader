@@ -17,7 +17,7 @@ struct ContentView: View {
                     .frame(maxWidth: 400)
                     .padding()
                 
-                Text("A Swift Package with a collection of SwiftUI framing views and tools to help with layout.")
+                Text("A Swift package for asynchronously downloading and decoding public WordPress content.")
                 
                 Spacer()
             }
@@ -27,7 +27,7 @@ struct ContentView: View {
             
             WordpressSiteAsyncView()
                 .tabItem {
-                    Label("Async", systemImage: "sparkles")
+                    Label("Content", systemImage: "network")
                 }
         }
     }
