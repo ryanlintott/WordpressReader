@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.0.0 - 2026-08-14
+
+### Breaking Changes
+
+- Removed the deprecated closure-based `WordpressSite` fetch methods. Use the async `fetchSettings(urlSession:)`, `fetchById(urlSession:_:id:)`, `stream(_:maxConcurrentTasks:)`, and `fetch(_:maxConcurrentTasks:)` methods instead.
+
+### Changed
+
+- Removed the closure-based path from the example app. The example now demonstrates the async APIs exclusively.
+
 ## 0.5.1 - 2026-08-14
 
 ### Added
