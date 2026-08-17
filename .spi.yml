@@ -1,9 +1,4 @@
 version: 1
 builder:
   configs:
-    - platform: macos-spm
-    - platform: ios
-    - platform: tvos
-    - platform: watchos
-    - platform: visionos
     - documentation_targets: [WordpressReader]
