@@ -107,7 +107,7 @@
 			);
 			mainGroup = CF9933432654463F00EE2348;
 			packageReferences = (
-				CF1AB2A32CB4335F0049E553 /* XCLocalSwiftPackageReference "../../WordpressReader" */,
+				CF1AB2A32CB4335F0049E553 /* XCLocalSwiftPackageReference ".." */,
 			);
 			productRefGroup = CF99334D2654463F00EE2348 /* Products */;
 			projectDirPath = "";
@@ -347,9 +347,9 @@
 /* End XCConfigurationList section */
 
 /* Begin XCLocalSwiftPackageReference section */
-		CF1AB2A32CB4335F0049E553 /* XCLocalSwiftPackageReference "../../WordpressReader" */ = {
+		CF1AB2A32CB4335F0049E553 /* XCLocalSwiftPackageReference ".." */ = {
 			isa = XCLocalSwiftPackageReference;
-			relativePath = ../../WordpressReader;
+			relativePath = ..;
 		};
 /* End XCLocalSwiftPackageReference section */
 
