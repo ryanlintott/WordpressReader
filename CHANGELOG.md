@@ -1,5 +1,27 @@
 # Changelog
 
+## 1.0.2 - 2026-08-17
+
+### Breaking Changes
+
+- Raised the minimum supported watchOS from 8 to 9.
+
+### Fixed
+
+- Moved the xcworkspace file inside the example app so the package builds correctly using swift build.
+
+## 1.0.1 - 2026-08-14
+
+### Changed
+
+- Updated readme removing Twitter and adding Bluesky
+- Updated example app to latest Xcode project settings.
+
+### Fixed
+
+- Removed unreferenced view from example app so it builds without errors.
+- ContentView in example app now properly describes what the package does.
+
 ## 1.0.0 - 2026-08-14
 
 ### Breaking Changes
