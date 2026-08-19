@@ -5,6 +5,7 @@
 ![License - MIT](https://img.shields.io/github/license/ryanlintott/WordpressReader)
 ![Version](https://img.shields.io/github/v/tag/ryanlintott/WordpressReader?label=version)
 ![GitHub last commit](https://img.shields.io/github/last-commit/ryanlintott/WordpressReader)
+[![Documentation](https://img.shields.io/badge/documentation-Swift%20Package%20Index-blue)](https://swiftpackageindex.com/ryanlintott/WordpressReader/documentation/wordpressreader)
 [![Mastodon](https://img.shields.io/badge/mastodon-@ryanlintott-5c4ee4.svg?style=flat)](http://mastodon.social/@ryanlintott)
 [![Bluesky](https://img.shields.io/badge/bluesky-@ryanlintott-0285FF.svg?style=flat)](https://bsky.app/profile/ryanlintott.bsky.social)
 
@@ -20,6 +21,9 @@ This package is compatible with iOS 15+, macOS 12+, watchOS 9+, tvOS 15+, and vi
 1. In Xcode go to `File -> Add Packages`
 2. Paste in the repo's url: `https://github.com/ryanlintott/WordpressReader` and select by version.
 3. Import the package using `import WordpressReader`
+
+# Documentation
+Full API documentation is hosted on the [Swift Package Index](https://swiftpackageindex.com/ryanlintott/WordpressReader/documentation/wordpressreader).
 
 # Is this Production-Ready?
 Really it's up to you. I currently use this package in my own [Old English Wordhord app](https://oldenglishwordhord.com/app).
@@ -52,7 +56,7 @@ let tags: [WordpressTag] = try await site.fetch(.tags())
 Add a set of WordpressQueryItem to narrow down your request:
 
 ```swift
-let request = WordpressRequest.posts([.postedAfter(aWeekAgo), .order(.asc), perPage(10)])
+let request = WordpressRequest.posts([.postedAfter(aWeekAgo), .order(.asc), .perPage(10)])
 let posts = try await site.fetch(request)
 ```
 

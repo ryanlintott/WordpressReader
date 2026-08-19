@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased
+
+### Added
+
+- DocC documentation catalog with a landing page introducing the package and curating the public API into topic groups.
+- Link and badge in the readme pointing to the documentation on the Swift Package Index.
+
 ## 1.0.2 - 2026-08-17
 
 ### Breaking Changes
