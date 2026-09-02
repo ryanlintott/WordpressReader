@@ -25,12 +25,12 @@ public enum WordpressOrderBy: String, Hashable, Equatable, CaseIterable, Sendabl
 public enum WordpressOrder: String, Hashable, Equatable, CaseIterable, Sendable {
     /// Ascending order.
     ///
-    /// (Z - A) for string. (oldest - newest) for dates.
+    /// (A - Z) for string. (oldest - newest) for dates.
     case asc
     
     /// Descending order. (default option)
     ///
-    /// (A - Z) for string. (newest - oldest) for dates.
+    /// (Z - A) for string. (newest - oldest) for dates.
     case desc
 }
 
@@ -69,7 +69,7 @@ public extension WordpressQueryItem {
         case .postedBefore: return "before"
         case .modifiedAfter: return "modified_after"
         case .modifiedBefore: return "modified_before"
-        case .orderBy: return "orderBy"
+        case .orderBy: return "orderby"
         case .order: return "order"
         case .perPage: return "per_page"
         case .page: return "page"
@@ -110,14 +110,17 @@ public extension WordpressQueryItem {
         lhs.name == rhs.name && lhs.value == rhs.value
     }
     
-    /// Default sorting by name.
+    /// Sorted by name and then by value so items sharing a name have a stable order.
     static func < (lhs: Self, rhs: Self) -> Bool {
-        lhs.name < rhs.name
+        (lhs.name, lhs.value) < (rhs.name, rhs.value)
     }
     
-    /// Hashed by name so that a set of WordpressQueryItem can only contain one value per name.
+    /// Hashed by name and value to match equality.
+    ///
+    /// Two query items sharing a name are not equal unless their values also match, so a set can hold several items with the same name. Use ``WordpressRequest`` to build a query that sends one value per name.
     func hash(into hasher: inout Hasher) {
         hasher.combine(name)
+        hasher.combine(value)
     }
 }
 
@@ -157,6 +160,14 @@ public extension Set where Element == WordpressQueryItem {
 }
 
 extension Set where Element == WordpressQueryItem {
+    /// Returns a set containing at most one query item per name.
+    ///
+    /// A Wordpress query sends one value per parameter, so items sharing a name are discarded. The item that sorts first is kept, making the result stable regardless of set ordering.
+    func uniquedByName() -> Self {
+        var names: Set<String> = []
+        return Self(sorted().filter { names.insert($0.name).inserted })
+    }
+
     func replacingFieldsWithParameterLabels<T: WordpressItem>(
         from type: T.Type
     ) -> Self {

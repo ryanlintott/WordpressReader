@@ -119,7 +119,7 @@ class WordpressSiteAsyncManager: ObservableObject {
             return "Unknown network error: \(description)"
         case is DecodingError:
             return "Decoding error: \(error.localizedDescription)"
-        case is WordpressReaderError:
+        case is any WordpressReaderErrorProtocol:
             return "WordpressReader error: \(error.localizedDescription)"
         default:
             return "Unknown error: \(error.localizedDescription)"

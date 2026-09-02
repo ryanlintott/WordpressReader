@@ -1,5 +1,23 @@
 # Changelog
 
+## Unreleased
+
+### Added
+
+- `WordpressReaderErrorProtocol`, adopted by `WordpressReaderError` and each of its nested error types. Catching it handles every error thrown by this package, which catching `WordpressReaderError` alone never did.
+
+### Changed
+
+- `WordpressQueryItem` now hashes by name and value to match its equality, and sorts by name and then value so items sharing a name have a stable order.
+
+### Fixed
+
+- `fetch(_:maxConcurrentTasks:)` now returns items in page order. Batches were previously concatenated as their pages completed, so results could ignore the order requested by the `order` and `orderby` query items.
+- `WordpressQueryItem.orderBy` now sends the Wordpress `orderby` parameter instead of `orderBy`, which Wordpress silently ignored.
+- `WordpressRequest` now keeps a single query item per name, so a request holding two items with the same name (two `perPage` values, for example) no longer sends duplicate URL query parameters. A `page` inside the query items still takes priority over the requested page.
+- Corrected the `WordpressOrder` documentation. `asc` sorts strings A - Z and `desc` sorts them Z - A.
+- Fixed the example app's error descriptions, which never matched the nested WordpressReader error types.
+
 ## 1.0.3 - 2026-08-19
 
 ### Added

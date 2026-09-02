@@ -21,19 +21,30 @@ public struct WordpressRequest<T: WordpressItem>: Hashable, Equatable, Sendable 
     /// A set of query items that can be used to narrow this request.
     ///
     /// A field query item inside an assigned set will be ignored and replaced with fields based on the parameter labels for the supplied Wordpress item type.
+    ///
+    /// A Wordpress query sends one value per parameter, so an assigned set is reduced to a single query item per name.
     public var queryItems: Set<WordpressQueryItem> {
         didSet {
             // Property observers don't run during initialization, so init repeats this normalization.
-            queryItems = queryItems.replacingFieldsWithParameterLabels(from: T.self)
+            queryItems = Self.normalized(queryItems)
         }
     }
     
     /// Creates a Wordpress request.
     ///
-    /// A custom URL session, start page and max pages can all be set after creation. A fields query item will be ignored and replaced with fields based on the parameter labels for the supplied Wordpress item type.
+    /// A custom URL session, start page and max pages can all be set after creation. A fields query item will be ignored and replaced with fields based on the parameter labels for the supplied Wordpress item type. Query items sharing a name are reduced to one.
     /// - Parameter queryItems: Query items used in this request. (default is an empty array)
     public init(queryItems: Set<WordpressQueryItem> = []) {
-        self.queryItems = queryItems.replacingFieldsWithParameterLabels(from: T.self)
+        self.queryItems = Self.normalized(queryItems)
+    }
+    
+    /// Returns query items with generated fields and a single query item per name.
+    /// - Parameter queryItems: Query items to normalize.
+    /// - Returns: Query items with generated fields and a single query item per name.
+    private static func normalized(_ queryItems: Set<WordpressQueryItem>) -> Set<WordpressQueryItem> {
+        queryItems
+            .replacingFieldsWithParameterLabels(from: T.self)
+            .uniquedByName()
     }
 }
 
@@ -47,8 +58,12 @@ public extension WordpressRequest {
     /// - Parameter page: Page to add to the query if one isn't already included.
     /// - Returns: An array of URL query items created from the Wordpress query items, adding a specified page if one is not already included in the query.
     func urlQueryItems(_ page: Int) -> [URLQueryItem] {
-        // If queryItems contains a page property already, it will be used as union will not override
-        queryItems.union([.page(page)]).urlQueryItems
+        let pageQueryItem = WordpressQueryItem.page(page)
+        // A page inside the query items takes priority over the supplied page.
+        guard queryItems.contains(where: { $0.name == pageQueryItem.name }) else {
+            return queryItems.union([pageQueryItem]).urlQueryItems
+        }
+        return urlQueryItems
     }
     
     /// Returns the page rage for this request using the start page, max pages and total pages.

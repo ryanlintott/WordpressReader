@@ -104,6 +104,54 @@ struct WordpressReaderTests {
         #expect(pageIDs == [[2], [3]])
     }
 
+    @Test(.tags(.networking))
+    func fetchReturnsItemsInPageOrder() async throws {
+        let (site, request, urlSession) = makeRequest()
+        defer { urlSession.invalidateAndCancel() }
+
+        let categories = try await site.fetch(request, maxConcurrentTasks: 2)
+
+        #expect(categories.map(\.id) == [1, 2, 3], "Pages complete out of order but must be returned in page order.")
+    }
+
+    @Test
+    func orderByUsesTheWordpressParameterName() {
+        #expect(WordpressQueryItem.orderBy(.title).name == "orderby")
+    }
+
+    @Test
+    func requestKeepsOneQueryItemPerName() {
+        let request = WordpressRequest<WordpressCategory>(queryItems: [.perPage(10), .perPage(100)])
+
+        #expect(request.queryItems.filter { $0.name == "per_page" }.count == 1)
+        #expect(request.urlQueryItems.filter { $0.name == "per_page" }.count == 1)
+    }
+
+    @Test
+    func requestPageQueryItemTakesPriorityOverRequestedPage() {
+        let request = WordpressRequest<WordpressCategory>(queryItems: [.page(2)])
+
+        let pageQueryItems = request.urlQueryItems(3).filter { $0.name == "page" }
+
+        #expect(pageQueryItems.count == 1)
+        #expect(pageQueryItems.first?.value == "2")
+    }
+
+    @Test
+    func everyErrorTypeCanBeCaughtAsAWordpressReaderError() {
+        let errors: [any Error] = [
+            WordpressReaderError.unknown(),
+            WordpressReaderError.URLError.badURLComponents,
+            WordpressReaderError.Network.notHTTPURLResponse,
+            WordpressReaderError.Data.notDecodableAsType(type: "WordpressPost"),
+            WordpressReaderError.API.badArgument,
+        ]
+
+        for error in errors {
+            #expect(error is any WordpressReaderErrorProtocol, "\(error) should be catchable as a WordpressReader error.")
+        }
+    }
+
     private func makeRequest(
         startPage: Int = 1
     ) -> (WordpressSite, WordpressRequest<WordpressCategory>, URLSession) {

@@ -13,7 +13,7 @@ let request = WordpressRequest.posts([.postedAfter(aWeekAgo), .order(.asc), .per
 let posts = try await site.fetch(request)
 ```
 
-Requests are paginated. ``WordpressSite/fetch(_:maxConcurrentTasks:)-(WordpressRequest<T>,_)`` gets pages in parallel and returns once they're all done, while ``WordpressSite/stream(_:maxConcurrentTasks:)`` and ``WordpressSite/streamPages(_:maxConcurrentTasks:)`` deliver each batch as its page completes.
+Requests are paginated. ``WordpressSite/fetch(_:maxConcurrentTasks:)-(WordpressRequest<T>,_)`` gets pages in parallel and returns every item in page order once they're all done, while ``WordpressSite/stream(_:maxConcurrentTasks:)`` and ``WordpressSite/streamPages(_:maxConcurrentTasks:)`` deliver each batch as its page completes.
 
 Requires iOS 15+, macOS 12+, watchOS 9+, tvOS 15+, or visionOS 1+. Sites hosted outside Wordpress.com are not supported yet.
 

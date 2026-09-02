@@ -72,7 +72,7 @@ self.posts = try await site.fetch(recentPosts)
 self.posts += try await site.fetch(remainingPosts)
 ```
 
-The default `.fetch()` gets pages in parallel but only returns when they're all done. If you want each batch as soon as it's ready, use an async stream:
+The default `.fetch()` gets pages in parallel and returns them in page order once they're all done. If you want each batch as soon as it's ready, use an async stream:
 
 ```swift
 for try await batch in try await site.stream(request) {

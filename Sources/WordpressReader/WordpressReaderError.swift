@@ -7,10 +7,23 @@
 
 import Foundation
 
-/// An enum that includes all WordpressReader error types
-public enum WordpressReaderError: LocalizedError {
+/// An error thrown by WordpressReader.
+///
+/// The error types in this package are nested inside ``WordpressReaderError`` rather than being cases of it, so catching `WordpressReaderError` alone will not catch a `WordpressReaderError.Network` error. Catch this protocol to handle any of them:
+///
+///     do {
+///         let posts = try await site.fetch(.posts())
+///     } catch let error as any WordpressReaderErrorProtocol {
+///         print(error.localizedDescription)
+///     }
+public protocol WordpressReaderErrorProtocol: LocalizedError { }
+
+/// An enum that namespaces all WordpressReader error types
+///
+/// Each nested type is thrown on its own, so catch ``WordpressReaderErrorProtocol`` to handle every error in this package.
+public enum WordpressReaderError: WordpressReaderErrorProtocol {
     /// A URL error
-    public enum URLError: LocalizedError {
+    public enum URLError: WordpressReaderErrorProtocol {
         /// An invalid URL.
         case badURL(urlString: String)
         /// An invalid HTTP URL.
@@ -31,7 +44,7 @@ public enum WordpressReaderError: LocalizedError {
     }
     
     /// A network error.
-    public enum Network: LocalizedError {
+    public enum Network: WordpressReaderErrorProtocol {
         /// An invalid header name.
         case badHeaderName(headerName: String)
         /// The response was not an HTTP URL response.
@@ -61,7 +74,7 @@ public enum WordpressReaderError: LocalizedError {
     }
     
     /// Data-related error
-    public enum Data: LocalizedError {
+    public enum Data: WordpressReaderErrorProtocol {
         case notDecodableAsType(type: String)
         
         public var errorDescription: String? {
@@ -73,7 +86,7 @@ public enum WordpressReaderError: LocalizedError {
     }
     
     /// Data-related error
-    public enum API: LocalizedError {
+    public enum API: WordpressReaderErrorProtocol {
         /// Bad argument supplied to Wordpress API
         case badArgument
         /// Error with Wordpress API

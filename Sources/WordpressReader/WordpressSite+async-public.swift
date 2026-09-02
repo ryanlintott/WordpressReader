@@ -137,9 +137,9 @@ extension WordpressSite {
         }
     }
     
-    /// Asynchronously returns an array of Wordpress items.
+    /// Asynchronously returns an array of Wordpress items in page order.
     ///
-    /// Use ``stream(_:maxConcurrentTasks:)`` to retrieve item batches as they complete.
+    /// Pages are requested in parallel and reassembled in page order once they have all completed. Use ``stream(_:maxConcurrentTasks:)`` to retrieve item batches as they complete instead.
     /// - Parameter request: Wordpress request used to retrieve Wordpress items.
     /// - Parameter maxConcurrentTasks: The maximum number of concurrent tasks. Default is 8, minimum is 1.
     /// - Returns: An array of ``WordpressItem`` asynchronously.
@@ -148,12 +148,20 @@ extension WordpressSite {
         _ request: WordpressRequest<T>,
         maxConcurrentTasks: Int? = nil
     ) async throws -> [T] {
-        try await stream(request, maxConcurrentTasks: maxConcurrentTasks).reduce(into: [], +=)
+        var batches: [Int: [T]] = [:]
+
+        for try await (pageNumber, batch) in try await streamPages(request, maxConcurrentTasks: maxConcurrentTasks) {
+            batches[pageNumber] = batch
+        }
+
+        return batches
+            .sorted { $0.key < $1.key }
+            .flatMap(\.value)
     }
     
-    /// Asynchronously returns an array of Wordpress items.
+    /// Asynchronously returns an array of Wordpress items in page order.
     ///
-    /// Use ``stream(_:maxConcurrentTasks:)`` to retrieve item batches as they complete.
+    /// Pages are requested in parallel and reassembled in page order once they have all completed. Use ``stream(_:maxConcurrentTasks:)`` to retrieve item batches as they complete instead.
     /// - Parameter type: The type of Wordpress item to retrieve using a default request.
     /// - Parameter maxConcurrentTasks: The maximum number of concurrent tasks. Default is 8, minimum is 1.
     /// - Returns: An array of ``WordpressItem`` asynchronously.
