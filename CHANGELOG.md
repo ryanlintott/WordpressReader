@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0.6 - 2026-09-03
+
+### Fixed
+
+- Fixed tests to work with new `WordpressSite` optional init.
+
 ## 1.0.4 - 2026-09-03
 
 ### Breaking Changes
