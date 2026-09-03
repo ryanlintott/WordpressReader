@@ -5,7 +5,7 @@ import Testing
 struct WordpressReaderTests {
     @Test
     func supportedItemsCreateIDBasedURLs() {
-        let site = WordpressSite(domain: "example.com", name: "Example")
+        let site = WordpressSite(domain: "example.com", name: "Example")!
 
         #expect(site.postURL(id: 42).absoluteString == "https://example.com?p=42")
         #expect(site.pageURL(id: 42).absoluteString == "https://example.com?page_id=42")
@@ -82,7 +82,7 @@ struct WordpressReaderTests {
         "under_score.example.com",
     ])
     func validDomainsCreateSiteURLs(domain: String) {
-        let site = WordpressSite(domain: domain, name: "Example")
+        let site = WordpressSite(domain: domain, name: "Example")!
 
         #expect(site.siteURL.absoluteString == "https://\(domain)")
     }
@@ -92,16 +92,12 @@ struct WordpressReaderTests {
     // The bodies below can't be parameterized because an exit test closure cannot capture context.
     @Test
     func aDomainWithASchemeFailsWhenCreatingASite() async {
-        await #expect(processExitsWith: .failure, "A domain must not include a scheme.") {
-            _ = WordpressSite(domain: "https://example.com", name: "Example")
-        }
+        #expect(WordpressSite(domain: "https://example.com", name: "Example") == nil)
     }
 
     @Test
-    func aDomainWithAnInvalidCharacterFailsWhenCreatingASite() async {
-        await #expect(processExitsWith: .failure, "A domain must be a valid host.") {
-            _ = WordpressSite(domain: "exa mple.com", name: "Example")
-        }
+    func aDomainWithAnInvalidCharacterReturnsNilCreatingASite() async {
+        #expect(WordpressSite(domain: "exa mple.com", name: "Example") == nil)
     }
 #endif
 
@@ -189,7 +185,7 @@ struct WordpressReaderTests {
         configuration.protocolClasses = [OutOfOrderPagesURLProtocol.self]
         let urlSession = URLSession(configuration: configuration)
 
-        let site = WordpressSite(domain: "example.com", name: "Example")
+        let site = WordpressSite(domain: "example.com", name: "Example")!
         var request = WordpressRequest<WordpressCategory>()
         request.urlSession = urlSession
         request.startPage = startPage
