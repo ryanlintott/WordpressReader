@@ -48,7 +48,11 @@ struct WordpressItemView<T: WordpressItem>: View {
             }
             
             Section(header: Text("Link")) {
-                Link(item.link, destination: URL(string: item.link)!)
+                if let linkURL = URL(string: item.link) {
+                    Link(item.link, destination: linkURL)
+                } else {
+                    Text(item.link)
+                }
             }
             
             Section(header: Text("Slug")) {

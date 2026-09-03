@@ -75,6 +75,36 @@ struct WordpressReaderTests {
         #expect(firstRequest == secondRequest)
     }
 
+    @Test(arguments: [
+        "example.com",
+        "sub.domain.example.co.uk",
+        "my-site.wordpress.com",
+        "under_score.example.com",
+    ])
+    func validDomainsCreateSiteURLs(domain: String) {
+        let site = WordpressSite(domain: domain, name: "Example")
+
+        #expect(site.siteURL.absoluteString == "https://\(domain)")
+    }
+
+#if compiler(>=6.2)
+    // Exit tests need Swift 6.2. This package also supports Swift 6.0, where these tests are left out.
+    // The bodies below can't be parameterized because an exit test closure cannot capture context.
+    @Test
+    func aDomainWithASchemeFailsWhenCreatingASite() async {
+        await #expect(processExitsWith: .failure, "A domain must not include a scheme.") {
+            _ = WordpressSite(domain: "https://example.com", name: "Example")
+        }
+    }
+
+    @Test
+    func aDomainWithAnInvalidCharacterFailsWhenCreatingASite() async {
+        await #expect(processExitsWith: .failure, "A domain must be a valid host.") {
+            _ = WordpressSite(domain: "exa mple.com", name: "Example")
+        }
+    }
+#endif
+
     @Test(.tags(.networking))
     func streamEmitsBatchesInCompletionOrder() async throws {
         let (site, request, urlSession) = makeRequest()

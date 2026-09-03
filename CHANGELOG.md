@@ -1,6 +1,10 @@
 # Changelog
 
-## Unreleased
+## 1.0.4 - 2026-09-03
+
+### Breaking Changes
+
+- The `WordpressSite` initializer now returns nil when a domain isn't a valid host, instead of crashing later when `siteURL`, `postURL(id:)`, `pageURL(id:)` or `categoryURL(id:)` is used. Domains holding a scheme, path, port or an invalid character are rejected; they already produced unusable REST API URLs.
 
 ### Added
 
@@ -17,6 +21,7 @@
 - `WordpressRequest` now keeps a single query item per name, so a request holding two items with the same name (two `perPage` values, for example) no longer sends duplicate URL query parameters. A `page` inside the query items still takes priority over the requested page.
 - Corrected the `WordpressOrder` documentation. `asc` sorts strings A - Z and `desc` sorts them Z - A.
 - Fixed the example app's error descriptions, which never matched the nested WordpressReader error types.
+- The example app no longer force unwraps an item link when building its URL.
 
 ## 1.0.3 - 2026-08-19
 

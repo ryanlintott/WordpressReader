@@ -11,10 +11,13 @@ import Foundation
 ///
 /// Does not yet work for sites hosted outside Wordpress.com.
 public struct WordpressSite: Codable, Hashable, Sendable {
-    /// Site domain excluding http or other prefix.
+    /// Site domain excluding any scheme, path or port.
     ///
     /// Example: `"example.com"`
     public let domain: String
+    
+    /// URL for the site based on the domain with "https://" added to the beginning.
+    public let siteURL: URL
     
     /// Name of the site. (Just used as a label)
     public let name: String
@@ -26,11 +29,15 @@ public struct WordpressSite: Codable, Hashable, Sendable {
     public let restAPIv2Url: URL
     
     /// Creates a type that allows API access to the provided wordpress.com domain
+    ///
+    /// Returns nil if the domain is not a valid host (excluding any scheme, path or port).
     /// - Parameters:
     ///   - domain: Wordpress site domain. Example: "example.com"
     ///   - name: Name of the site.
-    public init(domain: String, name: String) {
+    public init?(domain: String, name: String) {
+        guard let siteURL = Self.makeSiteURL(domain: domain) else { return nil }
         self.domain = domain
+        self.siteURL = siteURL
         self.name = name
         restAPIv1_1Url = Self.wordpressDotComRestAPIv1_1Prefix.appendingPathComponent(domain)
         restAPIv2Url = Self.wordpressDotComRestAPIv2Prefix.appendingPathComponent(domain)
@@ -47,9 +54,18 @@ public struct WordpressSite: Codable, Hashable, Sendable {
         restAPIv1_1Url
     }
     
-    /// URL for the site based on the domain with "https://" added to the beginning.
-    public var siteURL: URL {
-        URL(string: "https://\(domain)")!
+    /// Returns the URL for a site domain, or nil when the domain is not a valid host.
+    ///
+    /// A domain holding a scheme, path, port or an invalid character is rejected. Such domains also produce unusable REST API URLs.
+    /// - Parameter domain: Wordpress site domain. Example: "example.com"
+    /// - Returns: The URL for a site domain, or nil when the domain is not a valid host.
+    private static func makeSiteURL(domain: String) -> URL? {
+        guard domain.isEmpty == false else { return nil }
+        
+        var components = URLComponents()
+        components.scheme = "https"
+        components.host = domain
+        return components.url
     }
 
     /// URL that redirects to a post based on its id.
@@ -72,6 +88,7 @@ public struct WordpressSite: Codable, Hashable, Sendable {
             return siteURL.appending(queryItems: [queryItem])
         } else {
             // Fallback on earlier versions
+            // siteURL is a valid https URL, so neither the components nor the resulting URL can be nil.
             var components = URLComponents(url: siteURL, resolvingAgainstBaseURL: false)!
             components.queryItems = [queryItem]
             return components.url!

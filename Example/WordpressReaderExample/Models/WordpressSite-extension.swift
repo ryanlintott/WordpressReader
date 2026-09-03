@@ -8,5 +8,5 @@
 import WordpressReader
 
 extension WordpressSite {
-    static let wordhord = WordpressSite(domain: "oldenglishwordhord.com", name: "Old English Wordhord")
+    static let wordhord = WordpressSite(domain: "oldenglishwordhord.com", name: "Old English Wordhord")!
 }
